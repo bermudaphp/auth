@@ -1,20 +1,20 @@
 <?php
 
 
-namespace App\Authentication;
+namespace Bermuda\Authentication;
 
 
 /**
  * Interface SessionRepositoryInterface
- * @package App\Auth
+ * @package Bermuda\Authentication
  */
 interface SessionRepositoryInterface
 {
     /**
      * @param string|int $id
-     * @return SessionInterface
+     * @return SessionInterface|null
      */
-    public function get($id): SessionInterface ;
+    public function get($id):? SessionInterface ;
 
     /**
      * @param SessionInterface $session
@@ -25,4 +25,14 @@ interface SessionRepositoryInterface
      * @param SessionInterface $session
      */
     public function remove(SessionInterface $session): void ;
+    
+    /**
+     * @param array $ids
+     */
+    public function removeByIds(array $ids): void ;
+    
+    /**
+     * Remove all expired sessions
+     */
+    public function removeExpired(): void ;
 }
