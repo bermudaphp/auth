@@ -1,17 +1,17 @@
 <?php
 
 
-namespace App\Authentication\Adapter;
+namespace Bermuda\Authentication\Adapter;
 
 
-use App\Authentication\Result;
-use App\Authentication\UserProviderInterface;
+use Bermuda\Authentication\Result;
+use Bermuda\Authentication\UserProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 
 /**
  * Class PasswordAdapter
- * @package App\Auth\Adapter
+ * @package Bermuda\Authentication\Adapter
  */
 class PasswordAdapter extends CookieAdapter
 {
@@ -111,17 +111,16 @@ class PasswordAdapter extends CookieAdapter
             {
                 if(($this->verificationCallback)($params[$this->credential], $user->getCredential()))
                 {
-                    return $request->withAttribute(self::request_result_attribute, Result::authorized($user))
-                        ->withAttribute(self::request_user_attribute, $user);
+                    return Result::authorized($request, $user);
                 }
 
-                $req->withAttribute(self::request_result_attribute, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->messages[self::FAILURE_INVALID_CREDENTIAL]));
+                $req->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->messages[self::FAILURE_INVALID_CREDENTIAL]));
             }
 
-            return $request->withAttribute(self::request_result_attribute, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->messages[self::FAILURE_IDENTITY_NOT_FOUND]));
+            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->messages[self::FAILURE_IDENTITY_NOT_FOUND]));
         }
 
-        return $request->withAttribute(self::request_result_attribute, new Result(self::FAILURE_VALIDATION, $this->messages[self::FAILURE_VALIDATION]));
+        return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $this->messages[self::FAILURE_VALIDATION]));
     }
 
     /**
