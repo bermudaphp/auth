@@ -1,0 +1,17 @@
+{
+  "name": "bermudaphp/auth",
+  "license": "MIT",
+  "autoload":
+  {
+    "psr-4":
+    {
+      "Bermuda\\Authentication\\": "src/"
+    }
+  },
+  "require": 
+  {
+    "php": ">= 7.4",
+    "dflydev/fig-cookies": "^2.0.1",
+    "psr/http-server-middleware": "^1.0.1"
+  }
+}
