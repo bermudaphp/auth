@@ -38,7 +38,7 @@ class SessionMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $user = $request->getAttribute(AdapterInterface::request_user_attribute);
+        $user = $request->getAttribute(AdapterInterface::request_user_at);
 
         if ($user instanceof SessionAwareInterface)
         {
