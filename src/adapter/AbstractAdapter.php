@@ -32,8 +32,6 @@ abstract class AbstractAdapter implements AdapterInterface
         Result::FAILURE => 'Authentication failed'
     ];
 
-    protected const request_remember_at = 'request_remember_at';
-
     public function __construct(UserProviderInterface $provider, callable $responseGenerator)
     {
         $this->provider = $provider;
@@ -53,7 +51,7 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         if ($user != null)
         {
-            return Result::authorized($request)->withAttribute(self::request_remember_at, $remember);
+            return Result::authorized($request, $user, $remember);
         }
 
         return $this->authenticateRequest($request);
