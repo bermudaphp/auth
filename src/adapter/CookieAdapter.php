@@ -1,22 +1,22 @@
 <?php
 
 
-namespace App\Authentication\Adapter;
+namespace Bermuda\Authentication\Adapter;
 
 
-use App\Authentication\Result;
 use Dflydev\FigCookies\SetCookie;
-use App\Authentication\UserInterface;
+use Bermuda\Authentication\Result;
 use Psr\Http\Message\ResponseInterface;
+use Bermuda\Authentication\UserInterface;
 use Dflydev\FigCookies\FigResponseCookies;
 use Psr\Http\Message\ServerRequestInterface;
-use App\Authentication\SessionAwareInterface;
-use App\Authentication\UserProviderInterface;
+use Bermuda\Authentication\SessionAwareInterface;
+use Bermuda\Authentication\UserProviderInterface;
 
 
 /**
  * Class CookieAdapter
- * @package App\Authentication\Adapter
+ * @package Bermuda\Authentication\Adapter
  */
 class CookieAdapter extends AbstractAdapter
 {
@@ -43,12 +43,11 @@ class CookieAdapter extends AbstractAdapter
                     $user->sessions()->setCurrentId($id);
                 }
 
-                return $request->withAttribute(self::request_result_attribute, Result::authorized($user))
-                    ->withAttribute(self::request_user_attribute, $user);
+                return Result::authorized($request, $user);
             }
         }
 
-        return $request->withAttribute(self::request_result_attribute, Result::unauthorized());
+        return Result::unauthorized($request);
     }
 
     /**
@@ -140,7 +139,7 @@ class CookieAdapter extends AbstractAdapter
      */
     private function getUserFromRequest(ServerRequestInterface $request):? UserInterface
     {
-        return ($user = $request->getAttribute(self::request_user_attribute)) instanceof UserInterface ? $user : null;
+        return ($user = $request->getAttribute(self::request_user_at)) instanceof UserInterface ? $user : null;
     }
 
     /**
