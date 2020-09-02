@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App\Authentication;
+namespace Bermuda\Authentication;
 
 
 /**
  * Class Sessions
- * @package App\Auth
+ * @package Bermuda\Authentication
  */
 final class Sessions implements \IteratorAggregate
 {
