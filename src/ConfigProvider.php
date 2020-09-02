@@ -4,7 +4,6 @@
 namespace Bermuda\Authentication;
 
 
-use Cycle\ORM\ORMInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Bermuda\Authentication\Provider\UserProvider;
