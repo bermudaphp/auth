@@ -30,7 +30,7 @@ final class GuardMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->getAttribute(AdapterInterface::request_user_attribute) instanceof UserInterface)
+        if ($request->getAttribute(AdapterInterface::request_user_at) instanceof UserInterface)
         {
             return $handler->handle($request);
         }
