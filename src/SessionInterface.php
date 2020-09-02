@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App\Authentication;
+namespace Bermuda\Authentication;
 
 
 /**
  * Interface SessionInterface
- * @package App\Auth
+ * @package Bermuda\Authentication
  */
 interface SessionInterface
 {
