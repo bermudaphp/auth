@@ -1,7 +1,10 @@
 <?php
 
 
-namespace App\Authentication;
+namespace Bermuda\Authentication;
+
+
+use Psr\Http\Message\ServerRequestInterface;
 
 
 final class Result
@@ -22,20 +25,22 @@ final class Result
     }
 
     /**
+     * @param ServerRequestInterface $user
      * @param UserInterface $user
-     * @return static
+     * @return ServerRequestInterface
      */
-    public static function authorized(UserInterface $user): self
+    public static function authorized(ServerRequestInterface $request, UserInterface $user): ServerRequestInterface
     {
-        return new self(self::AUTHORIZED, 'AUTHORIZED', $user);
+        return $request->withAttribute(AdapterInterface::request_result_attribute, new self(self::AUTHORIZED, 'AUTHORIZED', $user))
+            ->withAttribute(AdapterInterface::request_user_attribute, $user);
     }
 
     /**
-     * @return static
+     * @return ServerRequestInterface
      */
-    public static function unauthorized(): self
+    public static function unauthorized(ServerRequestInterface $request): ServerRequestInterface
     {
-        return new self(self::UNAUTHORIZED, 'UNAUTHORIZED');
+        return return $request->withAttribute(AdapterInterface::request_result_attribute, new self(self::AUTHORIZED, 'AUTHORIZED', $user));
     }
 
     /**
