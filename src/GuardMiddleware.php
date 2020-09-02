@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Authentication;
+namespace Bermuda\Authentication;
 
 
 use Psr\Http\Message\ResponseInterface;
@@ -11,8 +11,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 
 /**
- * Class SecureAreaMiddleware
- * @package App\Auth
+ * Class GuardMiddleware
+ * @package Bermuda\Authentication
  */
 final class GuardMiddleware implements MiddlewareInterface
 {
