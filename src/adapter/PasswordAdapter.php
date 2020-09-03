@@ -97,7 +97,7 @@ class PasswordAdapter extends CookieAdapter
      */
     protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface
     {
-        if (strtoupper($request->getMethod()) != 'POST')
+        if (!strcasecmp($request->getMethod(), RequestMethodInterface::METHOD_POST))
         {
             return parent::authenticateRequest($request);
         }
@@ -109,12 +109,12 @@ class PasswordAdapter extends CookieAdapter
         {
             if (null != ($user = $this->provider->provide($params[$this->identity])))
             {
-                if(($this->verificationCallback)($params[$this->credential], $user->getCredential()))
+                if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
                 {
                     return Result::authorized($request, $user);
                 }
 
-                $req->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->messages[self::FAILURE_INVALID_CREDENTIAL]));
+                $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->messages[self::FAILURE_INVALID_CREDENTIAL]));
             }
 
             return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->messages[self::FAILURE_IDENTITY_NOT_FOUND]));
