@@ -38,7 +38,7 @@ final class Result
     {
         return $request->withAttribute(AdapterInterface::request_result_at, new self(self::AUTHORIZED, [], $user))
             ->withAttribute(AdapterInterface::request_user_at, $user)
-            ->withAttribute(AdapterInterface::request_remember_at);
+            ->withAttribute(AdapterInterface::request_remember_at, $remember);
     }
 
     /**
