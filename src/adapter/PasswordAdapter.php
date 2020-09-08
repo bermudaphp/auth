@@ -154,7 +154,7 @@ class PasswordAdapter extends CookieAdapter
         {
             $params = (array) $request->getParsedBody();
 
-            if (($errors = ($this->validator)($params)) == [])
+            if (($messages = ($this->validator)($params)) == [])
             {
                 if (null != ($user = $this->provider->provide($params[$this->identity])))
                 {
@@ -169,7 +169,7 @@ class PasswordAdapter extends CookieAdapter
                 return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->getMessage(self::FAILURE_IDENTITY_NOT_FOUND)));
             }
 
-            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $errors));
+            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $messages));
         }
 
         return parent::authenticateRequest($request);
