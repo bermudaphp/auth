@@ -15,6 +15,12 @@ interface SessionRepositoryInterface
      * @return SessionInterface|null
      */
     public function get($id):? SessionInterface ;
+    
+    /**
+     * @param string|int $id
+     * @return SessionInterface|null
+     */
+    public function make(UserInterface $user, ServerRequestInterface $request): SessionInterface ;
 
     /**
      * @param SessionInterface $session
