@@ -23,16 +23,19 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     protected $responseGenerator;
     protected UserProviderInterface $provider;
+    protected ?SessionRepositoryInterface $repository;
 
     /**
      * @var string[]
      */
     protected array $messages = [];
 
-    public function __construct(UserProviderInterface $provider, callable $responseGenerator)
+    public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
+        ?SessionRepositoryInterface $repository = null)
     {
         $this->provider = $provider;
         $this->setResponseGenerator($responseGenerator);
+        $this->repository = $repository;
     }
     
     /**
@@ -48,6 +51,20 @@ abstract class AbstractAdapter implements AdapterInterface
         
         return $this;
     }
+    
+    /**
+     * @param SessionRepositoryInterface|null $repository
+     * @return SessionRepositoryInterface
+     */
+    public function repository(SessionRepositoryInterface $repository = null):? SessionRepositoryInterface
+    {
+        if ($repository)
+        {
+            $this->repository = $repository;
+        }
+        
+        return $this->repository;
+    }
 
     /**
      * @param ServerRequestInterface $request
@@ -59,17 +76,39 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         if ($user != null)
         {
-            return Result::authorized($request, $user, $remember);
+            return $this->authenticated($request, $user, $remember);
         }
 
         return $this->authenticateRequest($request);
     }
-
+    
     /**
      * @param ServerRequestInterface $request
      * @return ServerRequestInterface
      */
     abstract protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface ;
+    
+    /**
+     * @param ServerRequestInterface $request
+     * @param UserInterface|null $user
+     * @param bool $remember
+     * @return ServerRequestInterface
+     */
+    protected function authenticated(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
+    {
+        if ($user instanceof SessionAwareInterface)
+        {
+            if (!$this->repository)
+            {
+                throw new RuntimeException('Bermuda\Authentication\SessionRepositoryInterface instance is missing');
+            }
+            
+            $user->sessions()->add($session = $this->repository->make($user, $request));
+            $user->sessions()->setCurrentId($session->getId());
+        } 
+        
+        return Result::authorized($request, $user, $remember);
+    }
 
     /**
      * @param array $messages
