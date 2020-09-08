@@ -26,6 +26,14 @@ class PasswordAdapter extends CookieAdapter
     const FAILURE_VALIDATION = -1;
     const FAILURE_INVALID_CREDENTIAL = -2;
     const FAILURE_IDENTITY_NOT_FOUND = -3;
+    
+    const CONFIG_IDENTITY_KEY = 'identity';
+    const CONFIG_CREDENTIAL_KEY = 'credential';
+    const CONFIG_PATH_KEY = 'path';
+    const CONFIG_VALIDATOR_KEY = 'validator';
+    const CONFIG_REMEMBER_KEY = 'remember';
+    const CONFIG_VALIDATOR_KEY = 'validator';
+    const CONFIG_VERIFICATION_CALLBACK_KEY = 'verification_callback';
 
     public function __construct(UserProviderInterface $provider,
         callable $responseGenerator, array $config = []
@@ -33,19 +41,19 @@ class PasswordAdapter extends CookieAdapter
     {
         parent::__construct($provider, $responseGenerator, $config['cookie'] ?? []);
 
-        $this->identity($config['identity'] ?? 'email');
-        $this->credential($config['credential'] ?? 'pswd');
-        $this->path($config['path'] ?? '/login');
+        $this->identity($config[self::CONFIG_IDENTITY_KEY] ?? 'email');
+        $this->credential($config[self::CONFIG_CREDENTIAL_KEY] ?? 'pswd');
+        $this->path($config[self::CONFIG_PATH_KEY] ?? '/login');
 
-        $this->rememberField = $config['remember'] ?? 'remember';
+        $this->rememberField = $config[self::CONFIG_REMEMBER_KEY] ?? 'remember';
         
-        array_key_exists('verification_callback', $config) ? $this->setVerificationCallback($config['verification_callback'])
+        array_key_exists(self::CONFIG_VERIFICATION_CALLBACK_KEY, $config) ? $this->setVerificationCallback($config[self::CONFIG_VERIFICATION_CALLBACK_KEY])
             ??  $this->verificationCallback = static function(string $pswd, string $hash): bool
         {
            return password_verify($pswd, $hash);
         };
         
-        array_key_exists('validator', $config) ? $this->setValidator($config['validator'])
+        array_key_exists(self::CONFIG_VALIDATOR_KEY, $config) ? $this->setValidator($config[self::CONFIG_VALIDATOR_KEY])
             ??  $this->validator = static function(array $input): array
         {
             $errors = [];
@@ -60,7 +68,7 @@ class PasswordAdapter extends CookieAdapter
                 $errors[$this->credential] = 'Credential is required';
             }
             
-           return $errors; 
+            return $errors; 
         };
     }
 
