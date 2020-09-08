@@ -36,7 +36,7 @@ final class Result
      */
     public static function authorized(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
     {
-        return $request->withAttribute(AdapterInterface::request_result_at, new self(self::AUTHORIZED, 'AUTHORIZED', $user))
+        return $request->withAttribute(AdapterInterface::request_result_at, new self(self::AUTHORIZED, [], $user))
             ->withAttribute(AdapterInterface::request_user_at, $user)
             ->withAttribute(AdapterInterface::request_remember_at);
     }
@@ -46,7 +46,7 @@ final class Result
      */
     public static function unauthorized(ServerRequestInterface $request): ServerRequestInterface
     {
-        return $request->withAttribute(AdapterInterface::request_result_at, new self(self::UNAUTHORIZED, 'UNAUTHORIZED'));
+        return $request->withAttribute(AdapterInterface::request_result_at, new self(self::UNAUTHORIZED));
     }
 
     /**
