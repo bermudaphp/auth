@@ -15,8 +15,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class PasswordAdapter extends CookieAdapter
 {
+    private \Closure $validator;
     private \Closure $verificationCallback;
-
+   
     private strin $path;
     private string $identity;
     private string $credential;
@@ -37,10 +38,29 @@ class PasswordAdapter extends CookieAdapter
         $this->path($config['path'] ?? '/login');
 
         $this->rememberField = $config['remember'] ?? 'remember';
-
-        $this->verificationCallback = static function(string $pswd, string $hash): bool
+        
+        array_key_exists('verification_callback', $config) ? $this->setVerificationCallback($config['verification_callback'])
+            ??  $this->verificationCallback = static function(string $pswd, string $hash): bool
         {
            return password_verify($pswd, $hash);
+        };
+        
+        array_key_exists('validator', $config) ? $this->setValidator($config['validator'])
+            ??  $this->validator = static function(array $input): array
+        {
+            $errors = [];
+            
+            if (array_key_exists($this->identity, $params))
+            {
+                $errors[$this->identity] = 'Identity is required';
+            }
+            
+            if (array_key_exists($this->credential, $params))
+            {
+                $errors[$this->credential] = 'Credential is required';
+            }
+            
+           return $errors; 
         };
     }
 
@@ -100,6 +120,20 @@ class PasswordAdapter extends CookieAdapter
 
         return $this;
     }
+    
+    /**
+     * @param callable $validator
+     * @return $this
+     */
+    public function setValidator(callable $validator): self
+    {
+        $this->validator = static function (array $input) use ($validator): array
+        {
+            return $validator($input);
+        }
+        
+        return $this;
+    }
 
     /**
      * @param ServerRequestInterface $request
@@ -112,8 +146,7 @@ class PasswordAdapter extends CookieAdapter
         {
             $params = (array) $request->getParsedBody();
 
-            if (array_key_exists($this->identity, $params)
-                && array_key_exists($this->credential, $params))
+            if (($errors = ($this->validator)($params)) == [])
             {
                 if (null != ($user = $this->provider->provide($params[$this->identity])))
                 {
@@ -128,12 +161,16 @@ class PasswordAdapter extends CookieAdapter
                 return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->getMessage(self::FAILURE_IDENTITY_NOT_FOUND)));
             }
 
-            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $this->getMessage(self::FAILURE_VALIDATION)));
+            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $errors));
         }
 
         return parent::authenticateRequest($request);
     }
     
+    /**
+     * @param int $code
+     * @return string
+     */
     protected function getMessage(int $code): string
     {
         return $this->messages[$code] ?? sprintf('Incorrect %s or password! Try again.', $this->identity);
