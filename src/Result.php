@@ -14,13 +14,18 @@ final class Result
     const FAILURE = 0;
 
     private int $code;
-    private ?string $msg = null;
+    private array $msgs = [];
     private ?UserInterface $user = null;
 
-    public function __construct(int $code = self::FAILURE, ?string $msg = null, ?UserInterface $user = null)
+    /**
+     * @param int $code
+     * @param string|array $msgs
+     * @param UserInterface|null $user
+     */
+    public function __construct(int $code = self::FAILURE, $msgs = [], ?UserInterface $user = null)
     {
         $this->code = $code;
-        $this->msg  = $msg;
+        $this->msgs  = (array) $msgs;
         $this->user = $user;
     }
 
@@ -77,10 +82,10 @@ final class Result
     }
 
     /**
-     * @return string|null
+     * @return array
      */
-    public function getMsg():? string
+    public function getMsgs(): array
     {
-        return $this->msg;
+        return $this->msgs;
     }
 }
