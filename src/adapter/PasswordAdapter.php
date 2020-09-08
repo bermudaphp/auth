@@ -37,7 +37,6 @@ class PasswordAdapter extends CookieAdapter
         $this->path($config['path'] ?? '/login');
 
         $this->rememberField = $config['remember'] ?? 'remember';
-        
 
         $this->verificationCallback = static function(string $pswd, string $hash): bool
         {
