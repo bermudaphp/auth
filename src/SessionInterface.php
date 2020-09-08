@@ -14,6 +14,11 @@ interface SessionInterface
      * @return string|int
      */
     public function getId();
+    
+    /**
+     * @return UserInterface
+     */
+    public function getUser(): UserInterface;
 
     /**
      * @param string $name
