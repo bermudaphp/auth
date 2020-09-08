@@ -21,8 +21,6 @@ class PasswordAdapter extends CookieAdapter
     private string $identity;
     private string $credential;
     private string $rememberField;
-    
-    protected array $messages = []
         
     const FAILURE_VALIDATION = -1;
     const FAILURE_INVALID_CREDENTIAL = -2;
@@ -137,7 +135,7 @@ class PasswordAdapter extends CookieAdapter
         return parent::authenticateRequest($request);
     }
     
-    private function getMessage(int $code): string
+    protected function getMessage(int $code): string
     {
         return $this->messages[$code] ?? sprintf('Incorrect %s or password! Try again.', $this->identity);
     }
