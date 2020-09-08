@@ -56,7 +56,7 @@ final class Sessions implements \IteratorAggregate
     /**
      * @return SessionInterface
      */
-    public function current(): SessionInterface
+    public function current():? SessionInterface
     {
         foreach ($this->sessions as $session)
         {
@@ -65,8 +65,8 @@ final class Sessions implements \IteratorAggregate
                 return $session;
             }
         }
-
-        throw new \RuntimeException('');
+        
+        return null;
     }
 
     /**
