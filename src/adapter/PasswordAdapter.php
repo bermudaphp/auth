@@ -55,7 +55,7 @@ class PasswordAdapter extends CookieAdapter
         };
         
         array_key_exists(self::CONFIG_VALIDATOR_KEY, $config) ? $this->setValidator($config[self::CONFIG_VALIDATOR_KEY])
-            :  $this->validator = static function(array $input): array
+            :  $this->validator = function(array $input): array
         {
             $errors = [];
             
