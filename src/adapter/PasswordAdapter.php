@@ -6,6 +6,7 @@ namespace Bermuda\Authentication\Adapter;
 
 use Bermuda\Authentication\Result;
 use Bermuda\Authentication\UserProviderInterface;
+use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 
@@ -18,7 +19,7 @@ class PasswordAdapter extends CookieAdapter
     private \Closure $validator;
     private \Closure $verificationCallback;
    
-    private strin $path;
+    private string $path;
     private string $identity;
     private string $credential;
     private string $rememberField;
