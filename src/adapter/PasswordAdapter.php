@@ -23,7 +23,7 @@ class PasswordAdapter extends CookieAdapter
     private string $identity;
     private string $credential;
     private string $rememberField;
-        
+         
     const FAILURE_VALIDATION = -1;
     const FAILURE_INVALID_CREDENTIAL = -2;
     const FAILURE_IDENTITY_NOT_FOUND = -3;
@@ -37,15 +37,15 @@ class PasswordAdapter extends CookieAdapter
     const CONFIG_VERIFICATION_CALLBACK_KEY = 'verification_callback';
 
     public function __construct(UserProviderInterface $provider,
-        callable $responseGenerator, array $config = []
+        callable $responseGenerator, array $config = [],
+        SessionRepositoryInterface $repository = null
     )
     {
-        parent::__construct($provider, $responseGenerator, $config[self::CONFIG_COOKIE_KEY] ?? []);
-
+        parent::__construct($provider, $responseGenerator, $config[self::CONFIG_COOKIE_KEY] ?? [], $repository);
+        
         $this->identity($config[self::CONFIG_IDENTITY_KEY] ?? 'email');
         $this->credential($config[self::CONFIG_CREDENTIAL_KEY] ?? 'pswd');
         $this->path($config[self::CONFIG_PATH_KEY] ?? '/login');
-
         $this->rememberField = $config[self::CONFIG_REMEMBER_KEY] ?? 'remember';
         
         array_key_exists(self::CONFIG_VERIFICATION_CALLBACK_KEY, $config) ? $this->setVerificationCallback($config[self::CONFIG_VERIFICATION_CALLBACK_KEY])
@@ -101,7 +101,6 @@ class PasswordAdapter extends CookieAdapter
         return $this->path;
     }
 
-
     /**
      * @param string|null $credential
      * @return string
@@ -115,7 +114,7 @@ class PasswordAdapter extends CookieAdapter
 
         return $this->credential;
     }
-
+    
     /**
      * @param callable $callback
      * @return $this
@@ -161,7 +160,7 @@ class PasswordAdapter extends CookieAdapter
                 {
                     if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
                     {
-                        return Result::authorized($request, $user);
+                        return $this->authenticated($request, $user, $remember);
                     }
 
                     $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->getMessage(self::FAILURE_INVALID_CREDENTIAL)));
