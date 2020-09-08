@@ -59,12 +59,12 @@ class PasswordAdapter extends CookieAdapter
         {
             $errors = [];
             
-            if (array_key_exists($this->identity, $input))
+            if (!array_key_exists($this->identity, $input))
             {
                 $errors[$this->identity] = 'Identity is required';
             }
             
-            if (array_key_exists($this->credential, $input))
+            if (!array_key_exists($this->credential, $input))
             {
                 $errors[$this->credential] = 'Credential is required';
             }
@@ -150,7 +150,7 @@ class PasswordAdapter extends CookieAdapter
      */
     protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface
     {
-        if (strcasecmp($request->getMethod(), RequestMethodInterface::METHOD_POST) 
+        if (strcasecmp($request->getMethod(), RequestMethodInterface::METHOD_POST) == 0
             && $this->path == $request->getUri()->getPath())
         {
             $params = (array) $request->getParsedBody();
