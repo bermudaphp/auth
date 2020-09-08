@@ -31,7 +31,6 @@ class PasswordAdapter extends CookieAdapter
     const CONFIG_IDENTITY_KEY = 'identity';
     const CONFIG_CREDENTIAL_KEY = 'credential';
     const CONFIG_PATH_KEY = 'path';
-    const CONFIG_VALIDATOR_KEY = 'validator';
     const CONFIG_REMEMBER_KEY = 'remember';
     const CONFIG_VALIDATOR_KEY = 'validator';
     const CONFIG_VERIFICATION_CALLBACK_KEY = 'verification_callback';
