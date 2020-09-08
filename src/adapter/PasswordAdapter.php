@@ -48,13 +48,13 @@ class PasswordAdapter extends CookieAdapter
         $this->rememberField = $config[self::CONFIG_REMEMBER_KEY] ?? 'remember';
         
         array_key_exists(self::CONFIG_VERIFICATION_CALLBACK_KEY, $config) ? $this->setVerificationCallback($config[self::CONFIG_VERIFICATION_CALLBACK_KEY])
-            ??  $this->verificationCallback = static function(string $pswd, string $hash): bool
+            :  $this->verificationCallback = static function(string $pswd, string $hash): bool
         {
            return password_verify($pswd, $hash);
         };
         
         array_key_exists(self::CONFIG_VALIDATOR_KEY, $config) ? $this->setValidator($config[self::CONFIG_VALIDATOR_KEY])
-            ??  $this->validator = static function(array $input): array
+            :  $this->validator = static function(array $input): array
         {
             $errors = [];
             
@@ -138,7 +138,7 @@ class PasswordAdapter extends CookieAdapter
         $this->validator = static function (array $input) use ($validator): array
         {
             return $validator($input);
-        }
+        };
         
         return $this;
     }
