@@ -24,21 +24,29 @@ abstract class AbstractAdapter implements AdapterInterface
     protected $responseGenerator;
     protected UserProviderInterface $provider;
 
-
     /**
      * @var string[]
      */
-    protected array $messages = [
-        Result::FAILURE => 'Authentication failed'
-    ];
+    protected array $messages = [];
 
     public function __construct(UserProviderInterface $provider, callable $responseGenerator)
     {
         $this->provider = $provider;
+        $this->setResponseGenerator($responseGenerator);
+    }
+    
+    /**
+     * @param callable $responseGenerator
+     * @return static
+     */
+    public function setResponseGenerator(callable $responseGenerator): self
+    {
         $this->responseGenerator = static function (ServerRequestInterface $req) use ($responseGenerator): ResponseInterface
         {
             return $responseGenerator($req);
         };
+        
+        return $this;
     }
 
     /**
@@ -84,5 +92,10 @@ abstract class AbstractAdapter implements AdapterInterface
     public function unauthorized(ServerRequestInterface $request): ResponseInterface
     {
         return ($this->responseGenerator)($request);
+    }
+    
+    protected function getMessage(int $code): string
+    {
+        return $this->messages[$code] ?? 'Authentication failed!';
     }
 }
