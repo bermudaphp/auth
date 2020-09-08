@@ -22,10 +22,11 @@ class CookieAdapter extends AbstractAdapter
 {
     protected array $cookieParams;
 
-    public function __construct(UserProviderInterface $provider, callable $responseGenerator, array $cookieParams = [])
+    public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
+        array $cookieParams = [], ?SessionRepositoryInterface $repository = null)
     {
         $this->cookieParams = $cookieParams;
-        parent::__construct($provider, $responseGenerator);
+        parent::__construct($provider, $responseGenerator, $repository);
     }
 
     /**
@@ -38,12 +39,7 @@ class CookieAdapter extends AbstractAdapter
         {
             if (($user = $this->provider->provide($id)) != null)
             {
-                if ($user instanceof SessionAwareInterface)
-                {
-                    $user->sessions()->setCurrentId($id);
-                }
-
-                return Result::authorized($request, $user);
+                return $this->authenticated($request, $user, $remember);
             }
         }
 
@@ -58,7 +54,7 @@ class CookieAdapter extends AbstractAdapter
     {
         if ($user instanceof SessionAwareInterface)
         {
-            return $user->sessions()->current();
+            return $user->sessions()->current()->getId();
         }
 
         return $user->getId();
