@@ -17,17 +17,13 @@ class PasswordAdapter extends CookieAdapter
 {
     private \Closure $verificationCallback;
 
-    private ?string $identity = null;
-    private ?string $credential = null;
-    private string $rememberField = '';
-
-    protected array $messages = [
-        Result::FAILURE => 'Incorrect email or password! Try again.',
-        self::FAILURE_IDENTITY_NOT_FOUND => '',
-        self::FAILURE_VALIDATION => '',
-        self::FAILURE_INVALID_CREDENTIAL => '',
-    ];
-
+    private strin $path;
+    private string $identity;
+    private string $credential;
+    private string $rememberField;
+    
+    protected array $messages = []
+        
     const FAILURE_VALIDATION = -1;
     const FAILURE_INVALID_CREDENTIAL = -2;
     const FAILURE_IDENTITY_NOT_FOUND = -3;
@@ -40,8 +36,10 @@ class PasswordAdapter extends CookieAdapter
 
         $this->identity($config['identity'] ?? 'email');
         $this->credential($config['credential'] ?? 'pswd');
+        $this->path($config['path'] ?? '/login');
 
         $this->rememberField = $config['remember'] ?? 'remember';
+        
 
         $this->verificationCallback = static function(string $pswd, string $hash): bool
         {
@@ -62,6 +60,21 @@ class PasswordAdapter extends CookieAdapter
 
         return $this->identity;
     }
+    
+    /**
+     * @param string|null $path
+     * @return string
+     */
+    public function path(string $path = null): string
+    {
+        if ($path != null)
+        {
+            $this->path = $path;
+        }
+
+        return $this->path;
+    }
+
 
     /**
      * @param string|null $credential
@@ -97,30 +110,36 @@ class PasswordAdapter extends CookieAdapter
      */
     protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface
     {
-        if (!strcasecmp($request->getMethod(), RequestMethodInterface::METHOD_POST))
+        if (strcasecmp($request->getMethod(), RequestMethodInterface::METHOD_POST) 
+            && $this->path == $request->getUri()->getPath())
         {
-            return parent::authenticateRequest($request);
-        }
+            $params = (array) $request->getParsedBody();
 
-        $params = (array) $request->getParsedBody();
-
-        if (array_key_exists($this->identity, $params)
-            && array_key_exists($this->credential, $params))
-        {
-            if (null != ($user = $this->provider->provide($params[$this->identity])))
+            if (array_key_exists($this->identity, $params)
+                && array_key_exists($this->credential, $params))
             {
-                if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
+                if (null != ($user = $this->provider->provide($params[$this->identity])))
                 {
-                    return Result::authorized($request, $user);
+                    if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
+                    {
+                        return Result::authorized($request, $user);
+                    }
+
+                    $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->getMessage(self::FAILURE_INVALID_CREDENTIAL)));
                 }
 
-                $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->messages[self::FAILURE_INVALID_CREDENTIAL]));
+                return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->getMessage(self::FAILURE_IDENTITY_NOT_FOUND)));
             }
 
-            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->messages[self::FAILURE_IDENTITY_NOT_FOUND]));
+            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $this->getMessage(self::FAILURE_VALIDATION)));
         }
 
-        return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $this->messages[self::FAILURE_VALIDATION]));
+        return parent::authenticateRequest($request);
+    }
+    
+    private function getMessage(int $code): string
+    {
+        return $this->messages[$code] ?? sprintf('Incorrect %s or password! Try again.', $this->identity);
     }
 
     /**
