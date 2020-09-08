@@ -76,14 +76,12 @@ class CookieAdapter extends AbstractAdapter
                 return $response;
             }
 
-            $id = $this->getSID($user);
-
             if (!$this->viaRemember($request))
             {
-                return FigResponseCookies::set($response, $this->setCookie($id));
+                return FigResponseCookies::set($response, $this->setCookie($this->getSID($user)));
             }
 
-            return FigResponseCookies::set($response, $this->setCookie($id)->rememberForever());
+            return FigResponseCookies::set($response, $this->setCookie($this->getSID($user))->rememberForever());
         }
 
         if (($user = $this->getUserFromRequest($request)) == null)
