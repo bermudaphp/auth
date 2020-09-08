@@ -59,12 +59,12 @@ class PasswordAdapter extends CookieAdapter
         {
             $errors = [];
             
-            if (array_key_exists($this->identity, $params))
+            if (array_key_exists($this->identity, $input))
             {
                 $errors[$this->identity] = 'Identity is required';
             }
             
-            if (array_key_exists($this->credential, $params))
+            if (array_key_exists($this->credential, $input))
             {
                 $errors[$this->credential] = 'Credential is required';
             }
