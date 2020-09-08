@@ -42,7 +42,13 @@ class SessionMiddleware implements MiddlewareInterface
 
         if ($user instanceof SessionAwareInterface)
         {
-            ($session = $user->sessions()->current())->activity(($this->datetimeFactory)());
+            if (($session = $user->sessions()->current()) == null)
+            {
+                throw new RuntimeException('Current session for user with id: %s is null', $user->getId());
+            }
+            
+            $session->activity(($this->datetimeFactory)());
+            
             $this->repository->store($session);
         }
 
