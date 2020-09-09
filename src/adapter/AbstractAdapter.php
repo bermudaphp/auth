@@ -94,22 +94,8 @@ abstract class AbstractAdapter implements AdapterInterface
      * @param bool $remember
      * @return ServerRequestInterface
      */
-    protected function authenticated(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
-    {
-        if ($user instanceof SessionAwareInterface)
-        {
-            if (!$this->repository)
-            {
-                throw new RuntimeException('Bermuda\Authentication\SessionRepositoryInterface instance is missing');
-            }
-            
-            $user->sessions()->add($session = $this->repository->make($user, $request));
-            $user->sessions()->setCurrentId($session->getId());
-        } 
-        
-        return Result::authorized($request, $user, $remember);
-    }
-
+    abstract protected function authenticated(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
+    
     /**
      * @param array $messages
      * @return array
