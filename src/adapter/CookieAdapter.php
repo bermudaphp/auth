@@ -94,7 +94,7 @@ class CookieAdapter extends AbstractAdapter
         {
             if (($user = $this->provider->provide($id)) != null)
             {
-                return $this->authenticated($request, $user, $this->viaRemember($request));
+                return $this->forceAuthentication($request, $user, $this->viaRemember($request));
             }
         }
 
