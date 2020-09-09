@@ -159,7 +159,7 @@ class PasswordAdapter extends CookieAdapter
                 {
                     if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
                     {
-                        return $this->authenticated($request, $user, $remember);
+                        return $this->authenticated($request, $user, $this->viaRemember($request));
                     }
 
                     $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->getMessage(self::FAILURE_INVALID_CREDENTIAL)));
