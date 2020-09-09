@@ -40,7 +40,7 @@ class PasswordAdapter extends CookieAdapter
         SessionRepositoryInterface $repository = null
     )
     {
-        parent::__construct($provider, $responseGenerator, $config[self::CONFIG_COOKIE_KEY] ?? [], $repository);
+        parent::__construct($provider, $responseGenerator, $config, $repository);
         
         $this->identity($config[self::CONFIG_IDENTITY_KEY] ?? 'email');
         $this->credential($config[self::CONFIG_CREDENTIAL_KEY] ?? 'pswd');
