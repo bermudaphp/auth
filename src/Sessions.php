@@ -16,7 +16,7 @@ final class Sessions implements \IteratorAggregate
     private array $sessions = [];
     private ?string $currentId = null;
 
-    public function __construct(iterable $sessions)
+    public function __construct(iterable $sessions, string $currentId = null)
     {
         $this->currentId = $currentId;
 
