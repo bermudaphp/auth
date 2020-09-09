@@ -21,7 +21,7 @@ use Bermuda\Authentication\UserProviderInterface;
 class CookieAdapter extends AbstractAdapter
 {
     protected array $cookieParams;
-    protected callable $dateTimeFactory;
+    protected $dateTimeFactory;
     
     const CONFIG_COOKIE_KEY = 'cookie';
     const CONFIG_DATETIME_FACTORY_KEY = 'datetime_factory';
@@ -42,7 +42,7 @@ class CookieAdapter extends AbstractAdapter
         
         else
         {
-            $this->dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY] ?? static function(): \DateTimeInterface
+            $this->dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY_KEY] ?? static function(): \DateTimeInterface
             {
                 return new \DateTime();
             };
@@ -94,7 +94,7 @@ class CookieAdapter extends AbstractAdapter
         {
             if (($user = $this->provider->provide($id)) != null)
             {
-                return $this->authenticated($request, $user, $remember);
+                return $this->authenticated($request, $user, $this->viaRemember($request));
             }
         }
 
