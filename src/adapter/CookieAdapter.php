@@ -24,15 +24,16 @@ class CookieAdapter extends AbstractAdapter
     protected callable $dateTimeFactory;
     
     const CONFIG_COOKIE_KEY = 'cookie';
+    const CONFIG_DATETIME_FACTORY_KEY = 'datetime_factory';
 
     public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
         array $config = [], ?SessionRepositoryInterface $repository = null)
     {
         $this->cookieParams = $config[self::CONFIG_COOKIE_KEY] ?? [];
         
-        if (array_key_exists(self::CONFIG_DATETIME_FACTORY, $config))
+        if (array_key_exists(self::CONFIG_DATETIME_FACTORY_KEY, $config))
         {
-            $dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY];
+            $dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY_KEY];
             $this->dateTimeFactory = static function() use ($dateTimeFactory): \DateTimeInterface
             {
                 return $datetimeFactory() ?? new \DateTimeImmutable();
