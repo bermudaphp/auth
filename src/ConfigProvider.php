@@ -6,7 +6,6 @@ namespace Bermuda\Authentication;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
-use Bermuda\Authentication\Provider\UserProvider;
 use Bermuda\Authentication\Adapter\CookieAdapter;
 use Bermuda\Authentication\Adapter\PasswordAdapter;
 
