@@ -90,11 +90,11 @@ abstract class AbstractAdapter implements AdapterInterface
     
     /**
      * @param ServerRequestInterface $request
-     * @param UserInterface|null $user
+     * @param UserInterface $user
      * @param bool $remember
      * @return ServerRequestInterface
      */
-    abstract protected function authenticated(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface ;
+    abstract protected function authenticated(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface ;
     
     /**
      * @param array $messages
