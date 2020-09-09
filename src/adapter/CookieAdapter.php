@@ -52,7 +52,7 @@ class CookieAdapter extends AbstractAdapter
     
     /**
      * @param ServerRequestInterface $request
-     * @param UserInterface|null $user
+     * @param UserInterface $user
      * @param bool $remember
      * @return ServerRequestInterface
      */
