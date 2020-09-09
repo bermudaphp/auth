@@ -76,7 +76,7 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         if ($user != null)
         {
-            return $this->authenticated($request, $user, $remember);
+            return $this->forceAuthentication($request, $user, $remember);
         }
 
         return $this->authenticateRequest($request);
