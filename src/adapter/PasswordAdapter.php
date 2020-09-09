@@ -28,7 +28,6 @@ class PasswordAdapter extends CookieAdapter
     const FAILURE_INVALID_CREDENTIAL = -2;
     const FAILURE_IDENTITY_NOT_FOUND = -3;
     
-    const CONFIG_COOKIE_KEY = 'cookie';
     const CONFIG_IDENTITY_KEY = 'identity';
     const CONFIG_CREDENTIAL_KEY = 'credential';
     const CONFIG_PATH_KEY = 'path';
