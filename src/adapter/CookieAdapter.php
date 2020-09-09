@@ -57,7 +57,7 @@ class CookieAdapter extends AbstractAdapter
      * @param bool $remember
      * @return ServerRequestInterface
      */
-    protected function authenticated(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
+    protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
     {
         if ($user instanceof SessionAwareInterface)
         {
