@@ -21,12 +21,66 @@ use Bermuda\Authentication\UserProviderInterface;
 class CookieAdapter extends AbstractAdapter
 {
     protected array $cookieParams;
+    protected callable $dateTimeFactory;
+    
+    const CONFIG_COOKIE_KEY = 'cookie';
 
     public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
-        array $cookieParams = [], ?SessionRepositoryInterface $repository = null)
+        array $config = [], ?SessionRepositoryInterface $repository = null)
     {
-        $this->cookieParams = $cookieParams;
+        $this->cookieParams = $config[self::CONFIG_COOKIE_KEY] ?? [];
+        
+        if (array_key_exists(self::CONFIG_DATETIME_FACTORY, $config))
+        {
+            $dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY];
+            $this->dateTimeFactory = static function() use ($dateTimeFactory): \DateTimeInterface
+            {
+                return $datetimeFactory() ?? new \DateTimeImmutable();
+            };
+        }
+        
+        else
+        {
+            $this->dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY] ?? static function(): \DateTimeInterface
+            {
+                return new \DateTime();
+            };
+        }
+        
         parent::__construct($provider, $responseGenerator, $repository);
+    }
+    
+    /**
+     * @param ServerRequestInterface $request
+     * @param UserInterface|null $user
+     * @param bool $remember
+     * @return ServerRequestInterface
+     */
+    protected function authenticated(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
+    {
+        if ($user instanceof SessionAwareInterface)
+        {
+            if (!$this->repository)
+            {
+                throw new RuntimeException('Bermuda\Authentication\SessionRepositoryInterface instance is missing');
+            }
+            
+            if (($id = $this->getIdFromRequest($request)) != null && ($session = $user->sessions()->get($id)) != null)
+            {
+                $session->activity(($this->dateTimeFactory)());
+            }
+            
+            else
+            {
+                $user->sessions()->add($session = $this->repository->make($user, $request));
+                $user->sessions()->setCurrentId($session->getId());
+            }
+            
+            $this->repository->store($session);
+            
+        } 
+        
+        return Result::authorized($request, $user, $remember);
     }
 
     /**
