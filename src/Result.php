@@ -25,7 +25,7 @@ final class Result
     public function __construct(int $code = self::FAILURE, $msgs = [], ?UserInterface $user = null)
     {
         $this->code = $code;
-        $this->msgs  = (array) $msgs;
+        $this->msgs = (array) $msgs;
         $this->user = $user;
     }
 
