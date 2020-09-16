@@ -13,59 +13,37 @@ use Psr\Http\Message\ServerRequestInterface;
 
 
 /**
- * Class Adapter
+ * Class AggregateAdapter
  * @package Bermuda\Authentication\Adapter
  */
-abstract class AbstractAdapter implements AdapterInterface
+final class AggregateAdapter implements AdapterInterface
 {
     /**
-     * @var callable
+     * @var AdapterInterface[]
      */
-    protected $responseGenerator;
-    protected UserProviderInterface $provider;
-    protected ?SessionRepositoryInterface $repository;
+    private array $adapters = [];
 
     /**
-     * @var string[]
+     * @param AdapterInterface[] $adapters
      */
-    protected array $messages = [];
-
-    public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
-        ?SessionRepositoryInterface $repository = null)
+    public function __construct(array $adapters = [])
     {
-        $this->provider = $provider;
-        $this->setResponseGenerator($responseGenerator);
-        $this->repository = $repository;
+        foreach ($adapters as $adapter)
+        {
+            $this->addAdapter($adapter);
+        }
     }
     
     /**
-     * @param callable $responseGenerator
-     * @return static
+     * @param AdapterInterface $adapter
+     * @return self
      */
-    public function setResponseGenerator(callable $responseGenerator): self
+    public function addAdapter(AdapterInterface $adapter): self
     {
-        $this->responseGenerator = static function (ServerRequestInterface $req) use ($responseGenerator): ResponseInterface
-        {
-            return $responseGenerator($req);
-        };
-        
+        $this->adapters[] = $adapter;
         return $this;
     }
-    
-    /**
-     * @param SessionRepositoryInterface|null $repository
-     * @return SessionRepositoryInterface
-     */
-    public function repository(SessionRepositoryInterface $repository = null):? SessionRepositoryInterface
-    {
-        if ($repository)
-        {
-            $this->repository = $repository;
-        }
-        
-        return $this->repository;
-    }
-
+     
     /**
      * @param ServerRequestInterface $request
      * @param UserInterface|null $user
@@ -74,53 +52,33 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
     {
-        if ($user != null)
-        {
-            return $this->forceAuthentication($request, $user, $remember);
-        }
-
-        return $this->authenticateRequest($request);
+        
     }
     
-    /**
-     * @param ServerRequestInterface $request
-     * @return ServerRequestInterface
-     */
-    abstract protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface ;
     
-    /**
-     * @param ServerRequestInterface $request
-     * @param UserInterface $user
-     * @param bool $remember
-     * @return ServerRequestInterface
-     */
-    abstract protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface ;
-    
-    /**
-     * @param array $messages
-     * @return array
-     */
-    public function messages(array $messages = []): array
-    {
-        if ($messages != [])
-        {
-            $this->messages = array_merge($this->messages, $messages);
-        }
-
-        return $this->messages;
-    }
-
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
     public function unauthorized(ServerRequestInterface $request): ResponseInterface
     {
-        return ($this->responseGenerator)($request);
+        
     }
     
-    protected function getMessage(int $code): string
+    /**
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function clear(ResponseInterface $response): ResponseInterface 
+    {    
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        return $this->messages[$code] ?? 'Authentication failed!';
     }
 }
