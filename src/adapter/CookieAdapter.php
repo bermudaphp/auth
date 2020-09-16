@@ -20,14 +20,15 @@ use Bermuda\Authentication\UserProviderInterface;
  */
 class CookieAdapter extends AbstractAdapter
 {
-    protected array $cookieParams;
-    protected $dateTimeFactory;
+    private array $cookieParams;
+    private $dateTimeFactory;
+    private ?AdapterInterface $delegate;
     
     const CONFIG_COOKIE_KEY = 'cookie';
     const CONFIG_DATETIME_FACTORY_KEY = 'datetime_factory';
 
     public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
-        array $config = [], ?SessionRepositoryInterface $repository = null)
+        array $config = [], ?SessionRepositoryInterface $repository = null, AdapterInterface $delegate = null)
     {
         $this->cookieParams = $config[self::CONFIG_COOKIE_KEY] ?? [];
         
@@ -48,6 +49,8 @@ class CookieAdapter extends AbstractAdapter
             };
         }
         
+        $this->delegate = $delegate;
+        
         parent::__construct($provider, $responseGenerator, $repository);
     }
 
@@ -64,22 +67,8 @@ class CookieAdapter extends AbstractAdapter
                 return $this->forceAuthentication($request, $user, $this->viaRemember($request));
             }
         }
-
-        return Result::unauthorized($request);
-    }
-
-    /**
-     * @param UserInterface $user
-     * @return string
-     */
-    protected function getSID(UserInterface $user): string
-    {
-        if ($user instanceof SessionAwareInterface)
-        {
-            return $user->sessions()->current()->getId();
-        }
-
-        return $user->getId();
+      
+        return $this->delegate ? $this->delegate->authenticate($request) : Result::unauthorized($request);
     }
 
     /**
@@ -123,7 +112,7 @@ class CookieAdapter extends AbstractAdapter
      * @param string $value
      * @return SetCookie
      */
-    protected function setCookie(string $value = ''): SetCookie
+    private function setCookie(string $value = ''): SetCookie
     {
         return SetCookie::create($this->getCookieName(), $value)
             ->withHttpOnly($this->cookieParams['httpOnly'] ?? true)
@@ -135,7 +124,7 @@ class CookieAdapter extends AbstractAdapter
     /**
      * @return string
      */
-    protected function getCookieName(): string
+    private function getCookieName(): string
     {
         return $this->cookieParams['name'] ?? '_sid';
     }
