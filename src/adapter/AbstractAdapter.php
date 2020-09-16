@@ -125,6 +125,12 @@ abstract class AbstractAdapter implements AdapterInterface
     }
     
     /**
+     * @param ServerRequestInterface $request
+     * @return UserInterface|null
+     */
+    abstract protected function getIdFromRequest(ServerRequestInterface $request):? string ;
+    
+    /**
      * @param array $messages
      * @return array
      */
@@ -147,6 +153,10 @@ abstract class AbstractAdapter implements AdapterInterface
         return ($this->responseGenerator)($request);
     }
     
+    /**
+     * @param int $code
+     * @return string
+     */
     protected function getMessage(int $code): string
     {
         return $this->messages[$code] ?? 'Authentication failed!';
