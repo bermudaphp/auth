@@ -86,7 +86,10 @@ abstract class AbstractAdapter implements AdapterInterface
      * @param ServerRequestInterface $request
      * @return ServerRequestInterface
      */
-    abstract protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface ;
+    protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface 
+    {
+        return Result::unauthorized($request);
+    }
     
     /**
      * @param ServerRequestInterface $request
