@@ -6,8 +6,8 @@ namespace Bermuda\Authentication;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
-use Bermuda\Authentication\Adapter\CookieAdapter;
 use Bermuda\Authentication\Adapter\PasswordAdapter;
+use Bermuda\Authentication\Adapter\CookieAdapter;
 
 
 use function Bermuda\redirect_on_route;
@@ -26,11 +26,13 @@ final class AdapterFactory
         
         $config = $container->has(self::container_config_id) ? $container->get(self::container_config_id) : [];
         $provider = $container->get(UserProviderInterface::class);
+
+        $repository = $container->has(SessionRepositoryInterface::class) ?
+            $container->get(SessionRepositoryInterface::class) : null ;
         
         $delegate = $container->has(self::container_delegate_id) ? $container->get(self::container_delegate_id) 
-            : new PasswordAdapter($provider, $generator, $config, $container->has(SessionRepositoryInterface::class) ? 
-                $container->get(SessionRepositoryInterface::class) : null);
+            : new PasswordAdapter($provider, $generator, $config, $repository);
         
-        return new CookieProvider($provider, $generator, $config, $delegate);
+        return new CookieAdapter($provider, $generator, $config, $repository, $delegate);
     }
 }
