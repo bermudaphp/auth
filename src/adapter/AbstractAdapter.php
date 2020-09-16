@@ -125,6 +125,25 @@ abstract class AbstractAdapter implements AdapterInterface
     }
     
     /**
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function clear(ResponseInterface $response): ResponseInterface
+    {
+        return $response;
+    }
+    
+     /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    {
+         return $response;
+    }
+    
+    /**
      * @param ServerRequestInterface $request
      * @return UserInterface|null
      */
