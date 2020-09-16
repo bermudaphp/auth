@@ -13,29 +13,24 @@ use Bermuda\Authentication\Adapter\PasswordAdapter;
 use function Bermuda\redirect_on_route;
 
 
-class AdapterFactory
+final class AdapterFactory
 {
-    public function __invoke(ContainerInterface $container)
-    {
+    public const container_config_id = 'auth.config';
+    public const container_delegate_id = 'auth.delegate';
+    public const container_response_generator_id = 'auth.response_generator';
     
-        return [
-            'dependencies' => [
-                'factories' => [
-                    AdapterInterface::class => static function(ContainerInterface $c): AdapterInterface
-                    {
-                        $responseGenerator = static function(): ResponseInterface
-                        {
-                            return redirect_on_route('login');
-                        };
-                        
-                        $provider = $c->get(UserProviderInterface::class);
-                        
-                       
-
-                        return new CookieAdapter($provider, $responseGenerator, $c->get('config')['auth.config'] ?? [], $delegate);
-                    }
-                ]
-            ]
-        ];
+    public function __invoke(ContainerInterface $container): CookieAdapter
+    {
+        $generator = $container->has(self::container_response_generator_id) ? $container->get(self::container_response_generator_id)
+            : static function(): ResponseInterface { return redirect_on_route('login'); };
+        
+        $config = $container->has(self::container_config_id) ? $container->get(self::container_config_id) : [];
+        $provider = $container->get(UserProviderInterface::class);
+        
+        $delegate = $container->has(self::container_delegate_id) ? $container->get(self::container_delegate_id) 
+            : new PasswordAdapter($provider, $generator, $config, $container->has(SessionRepositoryInterface::class) ? 
+                $container->get(SessionRepositoryInterface::class) : null);
+        
+        return new CookieProvider($provider, $generator, $config, $delegate);
     }
 }
