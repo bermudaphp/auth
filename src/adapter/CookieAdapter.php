@@ -78,7 +78,7 @@ class CookieAdapter extends AbstractAdapter
      */
     public function unauthorized(ServerRequestInterface $request): ResponseInterface
     {
-        if ($this->delegate && $request->getAttribute(self::request_result_at))
+        if ($this->delegate && $request->getAttribute(self::request_result_at)->isFailure())
         {
             return $this->delegate->unauthorized($request);
         }
