@@ -50,39 +50,6 @@ class CookieAdapter extends AbstractAdapter
         
         parent::__construct($provider, $responseGenerator, $repository);
     }
-    
-    /**
-     * @param ServerRequestInterface $request
-     * @param UserInterface $user
-     * @param bool $remember
-     * @return ServerRequestInterface
-     */
-    protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
-    {
-        if ($user instanceof SessionAwareInterface)
-        {
-            if (!$this->repository)
-            {
-                throw new RuntimeException('Bermuda\Authentication\SessionRepositoryInterface instance is missing');
-            }
-            
-            if (($id = $this->getIdFromRequest($request)) != null && ($session = $user->sessions()->get($id)) != null)
-            {
-                $session->activity(($this->dateTimeFactory)());
-            }
-            
-            else
-            {
-                $user->sessions()->add($session = $this->repository->make($user, $request));
-                $user->sessions()->setCurrentId($session->getId());
-            }
-            
-            $this->repository->store($session);
-            
-        } 
-        
-        return Result::authorized($request, $user, $remember);
-    }
 
     /**
      * @param ServerRequestInterface $request
