@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Bermuda\Authentication\UserInterface;
 use Dflydev\FigCookies\FigResponseCookies;
 use Psr\Http\Message\ServerRequestInterface;
+use Bermuda\Authentication\AdapterInterface;
 use Bermuda\Authentication\SessionAwareInterface;
 use Bermuda\Authentication\UserProviderInterface;
 
