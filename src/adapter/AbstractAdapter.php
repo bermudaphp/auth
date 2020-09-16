@@ -147,7 +147,10 @@ abstract class AbstractAdapter implements AdapterInterface
      * @param ServerRequestInterface $request
      * @return UserInterface|null
      */
-    abstract protected function getIdFromRequest(ServerRequestInterface $request):? string ;
+    protected function getIdFromRequest(ServerRequestInterface $request):? string 
+    {
+        return null;
+    }
     
     /**
      * @param UserInterface $user
