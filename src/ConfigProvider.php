@@ -13,22 +13,14 @@ use Bermuda\Authentication\Adapter\PasswordAdapter;
 use function Bermuda\redirect_on_route;
 
 
-class ConfigProvider
+final class ConfigProvider
 {
     public function __invoke()
     {
         return [
             'dependencies' => [
                 'factories' => [
-                    AdapterInterface::class => function(ContainerInterface $c): AdapterInterface
-                    {
-                        $responseGenerator = static function(): ResponseInterface
-                        {
-                            return redirect_on_route('login');
-                        };
-
-                        return new PasswordAdapter($c->get(UserProviderInterface::class), $responseGenerator, $c->get('config')['auth.config'] ?? []);
-                    }
+                    AdapterInterface::class => AdapterFactory::class
                 ]
             ]
         ];
