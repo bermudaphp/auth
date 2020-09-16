@@ -96,7 +96,7 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
     {
-        foreach ($this->adapters as $adapter)
+        foreach ($this->adapters as $n => $adapter)
         {
             $request = $adapter->authenticate($request, $user, $remember);
             
@@ -105,6 +105,8 @@ final class AggregateAdapter implements AdapterInterface
             {
                 $this->addAdapter($this->delegate)
                     ->delegate = $adapter;
+                
+                unset($this->adapters[$n]);
                 
                 return $request;
             }
