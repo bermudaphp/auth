@@ -13,7 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 
 /**
- * Class Adapter
+ * Class AbstractAdapter
  * @package Bermuda\Authentication\Adapter
  */
 abstract class AbstractAdapter implements AdapterInterface
