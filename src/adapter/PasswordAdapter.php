@@ -14,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * Class PasswordAdapter
  * @package Bermuda\Authentication\Adapter
  */
-class PasswordAdapter extends CookieAdapter
+class PasswordAdapter extends AbstractAdapter
 {
     private \Closure $validator;
     private \Closure $verificationCallback;
@@ -40,7 +40,7 @@ class PasswordAdapter extends CookieAdapter
         SessionRepositoryInterface $repository = null
     )
     {
-        parent::__construct($provider, $responseGenerator, $config, $repository);
+        parent::__construct($provider, $responseGenerator, $repository);
         
         $this->identity($config[self::CONFIG_IDENTITY_KEY] ?? 'email');
         $this->credential($config[self::CONFIG_CREDENTIAL_KEY] ?? 'pswd');
@@ -189,6 +189,6 @@ class PasswordAdapter extends CookieAdapter
      */
     protected function viaRemember(ServerRequestInterface $request): bool
     {
-        return ($request->getParsedBody()[$this->rememberField] ?? null == 'on') || parent::viaRemember($request);
+        return ($request->getParsedBody()[$this->rememberField] ?? null == 'on');
     }
 }
