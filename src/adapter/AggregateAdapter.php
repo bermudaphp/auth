@@ -22,19 +22,22 @@ final class AggregateAdapter implements AdapterInterface
      * @var AdapterInterface[]
      */
     private array $adapters = [];
-    private AdapterInterface $delegate;
+    private ?AdapterInterface $delegate = null;
 
     /**
      * @param AdapterInterface $delegate
      * @param AdapterInterface[] $adapters
      */
-    public function __construct(AdapterInterface $delegate, array $adapters = [])
+    public function __construct(array $adapters = [])
     {
-        $this->delegate = $delegate;
-        
-        foreach ($adapters as $adapter)
+        if ($adapters != [])
         {
-            $this->addAdapter($adapter);
+            $this->delegate = array_shift($adapters);
+            
+            foreach ($adapters as $adapter)
+            {
+                $this->addAdapter($adapter);
+            }   
         }
     }
     
@@ -59,7 +62,7 @@ final class AggregateAdapter implements AdapterInterface
             return $this->delegate;
         }
         
-        return $this->adapter ?? null;
+        return $this->adapters[$classname] ?? null;
     }
     
     /**
@@ -76,6 +79,11 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function getDelegate(): AdapterInterface
     {
+        if (!$this->delegate)
+        {
+            throw new \RuntimeException('Delegate is missing');
+        }
+        
         return $this->delegate;
     }
      
@@ -101,7 +109,7 @@ final class AggregateAdapter implements AdapterInterface
             }
         }
         
-        return $this->delegate->authenticate($request, $user, $remember);
+        return $this->getDelegate()->authenticate($request, $user, $remember);
     }
     
     /**
@@ -110,7 +118,7 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function unauthorized(ServerRequestInterface $request): ResponseInterface
     {
-         return $this->delegate->unauthorized($request);
+         return $this->getDelegate()->unauthorized($request);
     }
     
     /**
@@ -119,7 +127,7 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function clear(ResponseInterface $response): ResponseInterface 
     {
-         return $this->delegate->clear($request);
+         return $this->getDelegate()->clear($request);
     }
 
     /**
@@ -129,6 +137,6 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-         return $this->delegate->write($request, $response);
+         return $this->getDelegate()->write($request, $response);
     }
 }
