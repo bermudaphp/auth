@@ -159,7 +159,7 @@ class PasswordAdapter extends AbstractAdapter
                 {
                     if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
                     {
-                        return $this->authenticated($request, $user, $this->viaRemember($request));
+                        return $this->forceAuthentication($request, $user, $this->viaRemember($request));
                     }
 
                     $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->getMessage(self::FAILURE_INVALID_CREDENTIAL)));
