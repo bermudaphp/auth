@@ -104,7 +104,6 @@ final class AggregateAdapter implements AdapterInterface
         return $this->delegate->authenticate($request, $user, $remember);
     }
     
-    
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
