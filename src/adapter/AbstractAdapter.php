@@ -94,7 +94,10 @@ abstract class AbstractAdapter implements AdapterInterface
      * @param bool $remember
      * @return ServerRequestInterface
      */
-    abstract protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface ;
+    protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
+    {
+        return Result::authorized($request, $user, $remember);
+    }
     
     /**
      * @param array $messages
