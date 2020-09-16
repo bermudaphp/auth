@@ -76,6 +76,7 @@ final class AggregateAdapter implements AdapterInterface
     
     /**
      * @return AdapterInterface
+     * @throws \RuntimeException
      */
     public function getDelegate(): AdapterInterface
     {
