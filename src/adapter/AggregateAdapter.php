@@ -82,7 +82,7 @@ final class AggregateAdapter implements AdapterInterface
     {
         if (!$this->delegate)
         {
-            throw new \RuntimeException('Delegate is missing');
+            throw new \RuntimeException('Delegate is null');
         }
         
         return $this->delegate;
