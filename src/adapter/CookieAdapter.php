@@ -77,27 +77,24 @@ class CookieAdapter extends AbstractAdapter
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
+        $user = $this->getUserFromRequest($request);
+        
         if (!$this->cookieExists($request))
         {
-            if (($user = $this->getUserFromRequest($request)) == null)
+            if ($user != null)
             {
-                return $response;
+                if (!$this->viaRemember($request))
+                {
+                    return FigResponseCookies::set($response, $this->setCookie($this->getSID($user)));
+                }
+
+                return FigResponseCookies::set($response, $this->setCookie($this->getSID($user))->rememberForever());
             }
 
-            if (!$this->viaRemember($request))
-            {
-                return FigResponseCookies::set($response, $this->setCookie($this->getSID($user)));
-            }
-
-            return FigResponseCookies::set($response, $this->setCookie($this->getSID($user))->rememberForever());
+            return $response;
         }
 
-        if (($user = $this->getUserFromRequest($request)) == null)
-        {
-            return $this->clear($response);
-        }
-
-        return $response;
+        return $user == null ? $this->clear($response) : $response;
     }
 
     /**
