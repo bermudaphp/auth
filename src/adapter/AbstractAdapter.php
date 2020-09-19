@@ -65,7 +65,7 @@ abstract class AbstractAdapter implements AdapterInterface
     
     /**
      * @param SessionRepositoryInterface|null $repository
-     * @return SessionRepositoryInterface
+     * @return SessionRepositoryInterface|null
      */
     public function repository(SessionRepositoryInterface $repository = null):? SessionRepositoryInterface
     {
@@ -114,10 +114,11 @@ abstract class AbstractAdapter implements AdapterInterface
         {
             if ($this->repository == null)
             {
-                throw new RuntimeException(SessionRepositoryInterface::class . ' instance is null');
+                throw new \RuntimeException(SessionRepositoryInterface::class . ' instance is null');
             }
             
-            if (($id = $this->getIdFromRequest($request)) != null && ($session = $user->sessions()->get($id)) != null)
+            if (($id = $this->getIdFromRequest($request)) != null && 
+                ($session = $user->sessions()->get($id)) != null)
             {
                 $session->activity(($this->dateTimeFactory)());
             }
