@@ -39,6 +39,20 @@ abstract class AbstractAdapter implements AdapterInterface
     }
     
     /**
+     * @param UserProviderInterface|null $provider
+     * @return static
+     */
+    public function provider(?UserProviderInterface $provider = null):? UserProviderInterface
+    {
+        if ($provider != null)
+        {
+            $this->provider = $provider;
+        }
+        
+        return $this->provider;
+    }
+    
+    /**
      * @param callable $responseGenerator
      * @return static
      */
