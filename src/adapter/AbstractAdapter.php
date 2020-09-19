@@ -19,23 +19,19 @@ use Psr\Http\Message\ServerRequestInterface;
 abstract class AbstractAdapter implements AdapterInterface
 {
     /**
-     * @var callable
-     */
-    protected $responseGenerator;
-    protected UserProviderInterface $provider;
-    protected ?SessionRepositoryInterface $repository;
-
-    /**
      * @var string[]
      */
     protected array $messages = [];
+    protected \Closure $responseGenerator;
+    protected UserProviderInterface $provider;
+    protected ?SessionRepositoryInterface $repository;
 
     public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
         ?SessionRepositoryInterface $repository = null)
     {
         $this->provider = $provider;
-        $this->setResponseGenerator($responseGenerator);
-        $this->repository = $repository;
+        $this->setResponseGenerator($responseGenerator)
+            ->repository = $repository;
     }
     
     /**
