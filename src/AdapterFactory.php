@@ -25,14 +25,11 @@ final class AdapterFactory
             : static function(): ResponseInterface { return redirect_on_route('login'); };
         
         $config = $container->has(self::container_config_id) ? $container->get(self::container_config_id) : [];
-        $provider = $container->get(UserProviderInterface::class);
-
-        $repository = $container->has(SessionRepositoryInterface::class) ?
-            $container->get(SessionRepositoryInterface::class) : null ;
+        $repository = $container->has(SessionRepositoryInterface::class) ? $container->get(SessionRepositoryInterface::class) : null;
         
         $delegate = $container->has(self::container_delegate_id) ? $container->get(self::container_delegate_id) 
-            : new PasswordAdapter($provider, $generator, $config, $repository);
+            : new PasswordAdapter($container->get(UserProviderInterface::class), $generator, $config, $repository);
         
-        return new CookieAdapter($provider, $generator, $config, $repository, $delegate);
+        return new CookieAdapter($delegate->provider(), $generator, $config, $repository, $delegate);
     }
 }
