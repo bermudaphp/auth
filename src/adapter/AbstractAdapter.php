@@ -10,6 +10,7 @@ use Bermuda\Authentication\AdapterInterface;
 use Bermuda\Authentication\UserProviderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Bermuda\Authentication\SessionRepositoryInterface;
 
 
 /**
@@ -111,9 +112,9 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         if ($user instanceof SessionAwareInterface)
         {
-            if (!$this->repository)
+            if ($this->repository == null)
             {
-                throw new RuntimeException('Bermuda\Authentication\SessionRepositoryInterface instance is missing');
+                throw new RuntimeException(SessionRepositoryInterface::class . ' instance is null');
             }
             
             if (($id = $this->getIdFromRequest($request)) != null && ($session = $user->sessions()->get($id)) != null)
