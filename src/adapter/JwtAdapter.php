@@ -143,7 +143,7 @@ class JwtAdapter extends AbstractAdapter
     private function writeRefreshToken(ServerRequestInterface $request): ServerRequestInterface
     {
         return $request->withAttribute(self::request_refresh_token_at,
-            $this->generator->generateRefreshToken($accessToken = $request->getAttribute(self::request_access_token_at))
+            $this->generator->generateRefreshToken($request->getAttribute(self::request_access_token_at))
         );
     }
 }
