@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App;
+namespace Bermuda\Authentication\Adapter;
 
 
 use Bermuda\Http\Response;
@@ -10,7 +10,6 @@ use Psr\Http\Message\ResponseInterface;
 use Bermuda\Authentication\UserInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Authentication\UserProviderInterface;
-use Bermuda\Authentication\Adapter\AbstractAdapter;
 use Bermuda\Authentication\SessionRepositoryInterface;
 
 
