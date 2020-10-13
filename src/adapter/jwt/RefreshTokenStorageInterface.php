@@ -5,7 +5,7 @@ namespace Bermuda\Authentication\Adapter\Jwt;
 
 
 /**
- * Interface RefreshTokenStorage
+ * Interface RefreshTokenStorageInterface
  * @package Bermuda\Authentication\Adapter\Jwt
  */
 interface RefreshTokenStorageInterface
