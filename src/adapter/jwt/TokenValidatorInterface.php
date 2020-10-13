@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App;
+namespace Bermuda\Authentication\Adapter\Jwt;
 
 
 /**
