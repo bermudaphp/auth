@@ -1,12 +1,12 @@
 <?php
 
 
-namespace App;
+namespace Bermuda\Authentication\Adapter\Jwt;
 
 
 /**
  * Interface TokenParserInterface
- * @package App
+ * @package Bermuda\Authentication\Adapter\Jwt
  */
 interface TokenParserInterface
 {
