@@ -189,6 +189,6 @@ class PasswordAdapter extends AbstractAdapter
      */
     protected function viaRemember(ServerRequestInterface $request): bool
     {
-        return ($request->getParsedBody()[$this->rememberField] ?? null == 'on');
+        return ($request->getParsedBody()[$this->rememberField] ?? '' == 'on');
     }
 }
