@@ -74,9 +74,9 @@ final class Sessions implements \IteratorAggregate
      */
     public function getIterator(): \Generator
     {
-        foreach ($this->sessions as $session)
+        foreach ($this->sessions as $id => $session)
         {
-            yield $session;
+            yield $id => $session;
         }
     }
 }
