@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 
 /**
  * Class NeedAuthMiddleware
@@ -14,10 +15,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class NeedAuthMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
+    private ResponseFactoryInterface $responseFactory;
 
-    public function __construct(AdapterInterface $adapter)
+    public function __construct(AdapterInterface $adapter, ResponseFactoryInterface $responseFactory)
     {
         $this->adapter = $adapter;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
@@ -32,6 +35,6 @@ final class NeedAuthMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        return $this->adapter->unauthorized($request);
+        return $this->adapter->unauthorized($request, $this->responseFactory->createReasponse(401));
     }
 }
