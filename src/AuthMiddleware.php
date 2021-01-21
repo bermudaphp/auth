@@ -51,7 +51,6 @@ final class AuthMiddleware implements MiddlewareInterface
             }
             
             $this->sessionRepository->store($session);
-            
         }
         
         return $this->adapter->write($request, $handler->handle($request));
