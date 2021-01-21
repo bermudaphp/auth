@@ -23,8 +23,6 @@ final class CookieAdapter extends AbstractAdapter
     
     const CONFIG_COOKIE_KEY = 'CookieAdapter:cookie';
     const CONFIG_DATETIME_FACTORY_KEY = 'CookieAdapter:datetimeFactory';
-    const CONFIG_USER_PROVIDER_KEY = 'CookieAdapter:userProvider';
-    const CONFIG_RESPONSE_GENERATOR_KEY = 'CookieAdapter:responseGenerator';
 
     public function __construct(array $config)
     {
@@ -39,7 +37,7 @@ final class CookieAdapter extends AbstractAdapter
             return $datetimeFactory();
         };
         
-        parent::__construct($config[self::CONFIG_USER_PROVIDER_KEY], $config[self::CONFIG_RESPONSE_GENERATOR_KEY]);
+        parent::__construct($config);
     }
 
     /**
