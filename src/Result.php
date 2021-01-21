@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Bermuda\Authentication;
 
-
 use Psr\Http\Message\ServerRequestInterface;
-
 
 final class Result
 {
