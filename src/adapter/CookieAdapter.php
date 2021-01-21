@@ -102,7 +102,7 @@ final class CookieAdapter extends AbstractAdapter
      * @param ServerRequestInterface $req
      * @return bool
      */
-    protected function viaRemember(ServerRequestInterface $req): bool
+    private function viaRemember(ServerRequestInterface $req): bool
     {
         return $req->getAttribute(self::rememberAt, false);
     }
@@ -121,6 +121,24 @@ final class CookieAdapter extends AbstractAdapter
     }
 
     /**
+     * @param ResponseInterface $response
+     * @return ResponseInterface
+     */
+    public function clear(ResponseInterface $response): ResponseInterface
+    {
+        return FigResponseCookies::set($response, $this->setCookie()->expire());
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return UserInterface|null
+     */
+    protected function getIdFromRequest(ServerRequestInterface $request):? string
+    {
+        return $request->getCookieParams()[$this->getCookieName()] ?? null;
+    }
+    
+     /**
      * @return string
      */
     private function getCookieName(): string
@@ -144,23 +162,5 @@ final class CookieAdapter extends AbstractAdapter
     private function getUserFromRequest(ServerRequestInterface $request):? UserInterface
     {
         return ($user = $request->getAttribute(self::userAt)) instanceof UserInterface ? $user : null;
-    }
-
-    /**
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
-    public function clear(ResponseInterface $response): ResponseInterface
-    {
-        return FigResponseCookies::set($response, $this->setCookie()->expire());
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     * @return UserInterface|null
-     */
-    protected function getIdFromRequest(ServerRequestInterface $request):? string
-    {
-        return $request->getCookieParams()[$this->getCookieName()] ?? null;
     }
 }
