@@ -1,17 +1,12 @@
 <?php
 
-
 namespace Bermuda\Authentication;
-
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Bermuda\Authentication\Adapter\PasswordAdapter;
 use Bermuda\Authentication\Adapter\CookieAdapter;
-
-
 use function Bermuda\redirect_on_route;
-
 
 final class AdapterFactory
 {
