@@ -1,25 +1,21 @@
 <?php
 
-
 namespace Bermuda\Authentication\Adapter;
-
 
 use Bermuda\Authentication\Result;
 use Bermuda\Authentication\UserProviderInterface;
 use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-
 /**
  * Class PasswordAdapter
  * @package Bermuda\Authentication\Adapter
  */
-class PasswordAdapter extends AbstractAdapter
+final class PasswordAdapter extends AbstractAdapter
 {
     private \Closure $validator;
     private \Closure $verificationCallback;
    
-    private string $path;
     private string $identity;
     private string $credential;
     private string $rememberField;
@@ -28,23 +24,18 @@ class PasswordAdapter extends AbstractAdapter
     const FAILURE_INVALID_CREDENTIAL = -2;
     const FAILURE_IDENTITY_NOT_FOUND = -3;
     
-    const CONFIG_IDENTITY_KEY = 'identity';
-    const CONFIG_CREDENTIAL_KEY = 'credential';
-    const CONFIG_PATH_KEY = 'path';
-    const CONFIG_REMEMBER_KEY = 'remember';
-    const CONFIG_VALIDATOR_KEY = 'validator';
-    const CONFIG_VERIFICATION_CALLBACK_KEY = 'verification_callback';
+    const CONFIG_IDENTITY_KEY = 'PasswordAdapter:identity';
+    const CONFIG_CREDENTIAL_KEY = 'PasswordAdapter:credential';
+    const CONFIG_REMEMBER_KEY = 'PasswordAdapter:remember';
+    const CONFIG_VALIDATOR_KEY = 'PasswordAdapter:validator';
+    const CONFIG_VERIFICATION_CALLBACK_KEY = 'PasswordAdapter:verificationCallback';
 
-    public function __construct(UserProviderInterface $provider,
-        callable $responseGenerator, array $config = [],
-        SessionRepositoryInterface $repository = null
-    )
+    public function __construct(array $config)
     {
-        parent::__construct($provider, $responseGenerator, $repository);
+        parent::__construct($config);
         
         $this->identity($config[self::CONFIG_IDENTITY_KEY] ?? 'email');
         $this->credential($config[self::CONFIG_CREDENTIAL_KEY] ?? 'pswd');
-        $this->path($config[self::CONFIG_PATH_KEY] ?? '/login');
         $this->rememberField = $config[self::CONFIG_REMEMBER_KEY] ?? 'remember';
         
         array_key_exists(self::CONFIG_VERIFICATION_CALLBACK_KEY, $config) ? $this->setVerificationCallback($config[self::CONFIG_VERIFICATION_CALLBACK_KEY])
@@ -86,20 +77,6 @@ class PasswordAdapter extends AbstractAdapter
         return $this->identity;
     }
     
-    /**
-     * @param string|null $path
-     * @return string
-     */
-    public function path(string $path = null): string
-    {
-        if ($path != null)
-        {
-            $this->path = $path;
-        }
-
-        return $this->path;
-    }
-
     /**
      * @param string|null $credential
      * @return string
@@ -148,30 +125,34 @@ class PasswordAdapter extends AbstractAdapter
      */
     protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface
     {
-        if (strcasecmp($request->getMethod(), RequestMethodInterface::METHOD_POST) == 0
-            && $this->path == $request->getUri()->getPath())
+        $params = $this->getParamsFromRequest($request);
+        
+        if (($messages = ($this->validator)($params)) == [])
         {
-            $params = (array) $request->getParsedBody();
-
-            if (($messages = ($this->validator)($params)) == [])
+            if (null != ($user = $this->provider->provide($params[$this->identity])))
             {
-                if (null != ($user = $this->provider->provide($params[$this->identity])))
+                if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
                 {
-                    if (($this->verificationCallback)($params[$this->credential], $user->getCredential()))
-                    {
-                        return $this->forceAuthentication($request, $user, $this->viaRemember($request));
-                    }
-
-                    $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->getMessage(self::FAILURE_INVALID_CREDENTIAL)));
+                    return $this->forceAuthentication($request, $user, $this->viaRemember($request));
                 }
-
-                return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->getMessage(self::FAILURE_IDENTITY_NOT_FOUND)));
+                
+                $request->withAttribute(self::request_result_at, new Result(self::FAILURE_INVALID_CREDENTIAL, $this->getMessage(self::FAILURE_INVALID_CREDENTIAL)));
             }
 
-            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $messages));
+            return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_IDENTITY_NOT_FOUND, $this->getMessage(self::FAILURE_IDENTITY_NOT_FOUND)));
         }
 
-        return parent::authenticateRequest($request);
+        return $request->withAttribute(self::request_result_at, new Result(self::FAILURE_VALIDATION, $messages));
+    }
+    
+    private function getParamsFromRequest(ServerRequestInterface $request): array
+    {
+        if (!empty($params = $request->getParsedBody()))
+        {
+            return (array) $params;
+        }
+        
+        return (array) $request->getQueryParams();
     }
     
     /**
