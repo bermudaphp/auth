@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bermuda\Authentication\Adapter;
-
 
 use Dflydev\FigCookies\SetCookie;
 use Bermuda\Authentication\Result;
@@ -14,43 +12,31 @@ use Bermuda\Authentication\AdapterInterface;
 use Bermuda\Authentication\SessionAwareInterface;
 use Bermuda\Authentication\UserProviderInterface;
 
-
 /**
  * Class CookieAdapter
  * @package Bermuda\Authentication\Adapter
  */
-class CookieAdapter extends AbstractAdapter
+final class CookieAdapter extends AbstractAdapter
 {
-    private array $cookieParams;
     private $dateTimeFactory;
-    private ?AdapterInterface $delegate;
+    private array $cookieParams;
     
     const CONFIG_COOKIE_KEY = 'cookie';
     const CONFIG_DATETIME_FACTORY_KEY = 'datetime_factory';
 
     public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
-        array $config = [], ?SessionRepositoryInterface $repository = null, AdapterInterface $delegate = null)
+        array $config = [], ?SessionRepositoryInterface $repository = null)
     {
         $this->cookieParams = $config[self::CONFIG_COOKIE_KEY] ?? [];
-        
-        if (array_key_exists(self::CONFIG_DATETIME_FACTORY_KEY, $config))
+        $this->dateTimeFactory = static function() use ($dateTimeFactory): \DateTimeInterface
         {
-            $dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY_KEY];
-            $this->dateTimeFactory = static function() use ($dateTimeFactory): \DateTimeInterface
+            if (!$dateTimeFactory)
             {
-                return $datetimeFactory() ?? new \DateTimeImmutable();
-            };
-        }
-        
-        else
-        {
-            $this->dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY_KEY] ?? static function(): \DateTimeInterface
-            {
-                return new \DateTime();
-            };
-        }
-        
-        $this->delegate = $delegate;
+                return new \DateTimeImmutable();
+            }
+                
+            return $datetimeFactory();
+        };
         
         parent::__construct($provider, $responseGenerator, $repository);
     }
@@ -69,7 +55,7 @@ class CookieAdapter extends AbstractAdapter
             }
         }
       
-        return $this->delegate ? $this->delegate->authenticate($request) : Result::unauthorized($request);
+        return Result::unauthorized($request);
     }
     
     /**
@@ -117,7 +103,7 @@ class CookieAdapter extends AbstractAdapter
      */
     protected function viaRemember(ServerRequestInterface $req): bool
     {
-        return $req->getAttribute(self::request_remember_at, false);
+        return $req->getAttribute(self::rememberAt, false);
     }
 
     /**
@@ -156,7 +142,7 @@ class CookieAdapter extends AbstractAdapter
      */
     private function getUserFromRequest(ServerRequestInterface $request):? UserInterface
     {
-        return ($user = $request->getAttribute(self::request_user_at)) instanceof UserInterface ? $user : null;
+        return ($user = $request->getAttribute(self::userAt)) instanceof UserInterface ? $user : null;
     }
 
     /**
