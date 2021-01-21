@@ -154,11 +154,12 @@ abstract class AbstractAdapter implements AdapterInterface
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function unauthorized(ServerRequestInterface $request): ResponseInterface
+    public function unauthorized(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        return ($this->responseGenerator)($request);
+        return ($this->responseGenerator)($request, $response);
     }
     
     /**
