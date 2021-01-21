@@ -8,10 +8,10 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Class AuthenticationMiddleware
+ * Class AuthMiddleware
  * @package Bermuda\Authentication
  */
-final class AuthenticationMiddleware implements MiddlewareInterface
+final class AuthMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
     private ?SessionRepositoryInterface $sessionRepository;
