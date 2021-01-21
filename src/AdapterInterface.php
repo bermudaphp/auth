@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Bermuda\Authentication;
-
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 
 /**
  * Interface AdapterInterface
@@ -14,9 +11,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 interface AdapterInterface
 {
-    public const request_user_at = UserInterface::class;
-    public const request_result_at = Result::class;
-    public const request_remember_at = self::class . '::remember_at';
+    public const userAt = UserInterface::class;
+    public const resultAt = Result::class;
+    public const rememberAt = self::class . '::rememberAt';
 
     /**
      * @param ServerRequestInterface $request
@@ -28,9 +25,10 @@ interface AdapterInterface
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function unauthorized(ServerRequestInterface $request): ResponseInterface ;
+    public function unauthorized(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface ;
 
     /**
      * @param ResponseInterface $response
