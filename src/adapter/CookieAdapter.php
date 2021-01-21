@@ -21,11 +21,12 @@ final class CookieAdapter extends AbstractAdapter
     private $dateTimeFactory;
     private array $cookieParams;
     
-    const CONFIG_COOKIE_KEY = 'cookie';
-    const CONFIG_DATETIME_FACTORY_KEY = 'datetime_factory';
+    const CONFIG_COOKIE_KEY = 'CookieAdapter:cookie';
+    const CONFIG_DATETIME_FACTORY_KEY = 'CookieAdapter:datetimeFactory';
+    const CONFIG_USER_PROVIDER_KEY = 'CookieAdapter:userProvider';
+    const CONFIG_RESPONSE_GENERATOR_KEY = 'CookieAdapter:responseGenerator';
 
-    public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
-        array $config = [], ?SessionRepositoryInterface $repository = null)
+    public function __construct(array $config)
     {
         $this->cookieParams = $config[self::CONFIG_COOKIE_KEY] ?? [];
         $this->dateTimeFactory = static function() use ($dateTimeFactory): \DateTimeInterface
@@ -38,7 +39,7 @@ final class CookieAdapter extends AbstractAdapter
             return $datetimeFactory();
         };
         
-        parent::__construct($provider, $responseGenerator, $repository);
+        parent::__construct($config[self::CONFIG_USER_PROVIDER_KEY], $config[self::CONFIG_RESPONSE_GENERATOR_KEY]);
     }
 
     /**
