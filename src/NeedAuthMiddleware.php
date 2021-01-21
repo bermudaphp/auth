@@ -1,20 +1,17 @@
 <?php
 
-
 namespace Bermuda\Authentication;
-
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-
 /**
- * Class GuardMiddleware
+ * Class NeedAuthMiddleware
  * @package Bermuda\Authentication
  */
-final class GuardMiddleware implements MiddlewareInterface
+final class NeedAuthMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
 
