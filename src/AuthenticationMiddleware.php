@@ -14,12 +14,12 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class AuthenticationMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
-    private ?SessionRepositoryInterface $repository;
+    private ?SessionRepositoryInterface $sessionRepository;
 
     public function __construct(AdapterInterface $adapter, ?SessionRepository $repository = null)
     {
         $this->adapter = $adapter;
-        $this->repository = $repository;
+        $this->sessionRepository = $repository;
     }
 
     /**
@@ -33,9 +33,9 @@ final class AuthenticationMiddleware implements MiddlewareInterface
         if ($result->isAuthorized() && ($user = $result->getUser()) 
             instanceof SessionAwareInterface)
         {
-            if ($this->repository == null)
+            if ($this->sessionRepository == null)
             {
-                throw new \RuntimeException(SessionRepositoryInterface::class . ' instance is null');
+                throw new \RuntimeException('Bermuda\Authentication\AuthenticationMiddleware::$sessionRepository is null');
             }
             
             if (($id = $this->getIdFromRequest($request)) != null && 
@@ -46,11 +46,11 @@ final class AuthenticationMiddleware implements MiddlewareInterface
             
             else
             {
-                $user->sessions()->add($session = $this->repository->make($user, $request));
+                $user->sessions()->add($session = $this->sessionRepository->make($user, $request));
                 $user->sessions()->setCurrentId($session->getId());
             }
             
-            $this->repository->store($session);
+            $this->sessionRepository->store($session);
             
         }
         
