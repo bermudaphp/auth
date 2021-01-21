@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bermuda\Authentication\Adapter;
-
 
 use Bermuda\Authentication\Result;
 use Bermuda\Authentication\UserInterface;
@@ -10,7 +8,6 @@ use Bermuda\Authentication\AdapterInterface;
 use Bermuda\Authentication\UserProviderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 
 /**
  * Class AggregateAdapter
@@ -22,23 +19,13 @@ final class AggregateAdapter implements AdapterInterface
      * @var AdapterInterface[]
      */
     private array $adapters = [];
-    private ?AdapterInterface $delegate = null;
 
     /**
-     * @param AdapterInterface $delegate
      * @param AdapterInterface[] $adapters
      */
-    public function __construct(array $adapters = [])
+    public function __construct(iterable $adapters = [])
     {
-        if ($adapters != [])
-        {
-            $this->delegate = array_shift($adapters);
-            
-            foreach ($adapters as $adapter)
-            {
-                $this->addAdapter($adapter);
-            }   
-        }
+        $this->addAdapters($adapters);
     }
     
     /**
@@ -51,17 +38,26 @@ final class AggregateAdapter implements AdapterInterface
         return $this;
     }
     
+     /**
+     * @param AdapterInterface[] $adapters
+     * @return self
+     */
+    public function addAdapters(iterable $adapters): self
+    {
+        foreach($adapters as $adapter)
+        {
+            $this->addAdapter($adapter);
+        }
+        
+        return $this;
+    }
+    
     /**
      * @param string $classname
      * @return AdapterInterface|null
      */
     public function getAdapter(string $classname):? AdapterInterface
     {
-        if (get_class($this->delegate) == $classname)
-        {
-            return $this->delegate;
-        }
-        
         return $this->adapters[$classname] ?? null;
     }
     
@@ -71,21 +67,7 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function hasAdapter(string $classname): bool
     {
-        return $this->getAdapter($classname) != null;
-    }
-    
-    /**
-     * @return AdapterInterface
-     * @throws \RuntimeException
-     */
-    public function getDelegate(): AdapterInterface
-    {
-        if (!$this->delegate)
-        {
-            throw new \RuntimeException('Delegate is null');
-        }
-        
-        return $this->delegate;
+        return isset($this->adapters[$classname]);
     }
      
     /**
@@ -96,32 +78,39 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
     {
-        foreach ($this->adapters as $n => $adapter)
+        foreach ($this->adapters as $adapter)
         {
-            $request = $adapter->authenticate($request, $user, $remember);
+            $result = ($request = $adapter->authenticate($request, $user, $remember))
+                ->getAttribute(self::resultAt);
             
-            if (($result = $request->getAttribute(self::request_result_at))
-                ->isFailure() || $result->isAuthorized())
+            if ($result->isAuthorized() || $result->isFailure())
             {
-                $this->addAdapter($this->delegate)
-                    ->delegate = $adapter;
-                
-                unset($this->adapters[$n]);
-                
                 return $request;
             }
         }
         
-        return $this->getDelegate()->authenticate($request, $user, $remember);
+        return Result::unauthorized($request);
     }
     
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function unauthorized(ServerRequestInterface $request): ResponseInterface
+    public function unauthorized(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-         return $this->getDelegate()->unauthorized($request);
+        $original = $response;
+        
+        foreach($this->adapters as $adapter)
+        {
+            $response = $adapter->unauthorized($request, $response);
+            
+            if ($original !== $response)
+            {
+                return $response;
+            }
+        }
+        
+        return $response->withStatus(401, 'Unauthorized');
     }
     
     /**
@@ -130,7 +119,19 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function clear(ResponseInterface $response): ResponseInterface 
     {
-         return $this->getDelegate()->clear($request);
+        $original = $response;
+        
+        foreach($this->adapters as $adapter)
+        {
+            $response = $adapter->clear($response);
+            
+            if ($original !== $response)
+            {
+                return $response;
+            }
+        }
+        
+        return $response;
     }
 
     /**
@@ -140,6 +141,18 @@ final class AggregateAdapter implements AdapterInterface
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-         return $this->getDelegate()->write($request, $response);
+        $original = $response;
+       
+        foreach($this->adapters as $adapter)
+        {
+            $response = $adapter->write($request, $response);
+            
+            if ($original !== $response)
+            {
+                return $response;
+            }
+        }
+        
+        return $response;
     }
 }
