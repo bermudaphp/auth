@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bermuda\Authentication\Adapter;
-
 
 use Bermuda\Authentication\Result;
 use Bermuda\Authentication\UserInterface;
@@ -11,7 +9,6 @@ use Bermuda\Authentication\UserProviderInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Authentication\SessionRepositoryInterface;
-
 
 /**
  * Class AbstractAdapter
@@ -25,14 +22,11 @@ abstract class AbstractAdapter implements AdapterInterface
     protected array $messages = [];
     protected \Closure $responseGenerator;
     protected UserProviderInterface $provider;
-    protected ?SessionRepositoryInterface $repository;
 
-    public function __construct(UserProviderInterface $provider, callable $responseGenerator, 
-        ?SessionRepositoryInterface $repository = null)
+    public function __construct(UserProviderInterface $provider, callable $responseGenerator)
     {
         $this->provider = $provider;
-        $this->setResponseGenerator($responseGenerator)
-            ->repository = $repository;
+        $this->setResponseGenerator($responseGenerator);
     }
     
     /**
@@ -63,20 +57,6 @@ abstract class AbstractAdapter implements AdapterInterface
         return $this;
     }
     
-    /**
-     * @param SessionRepositoryInterface|null $repository
-     * @return SessionRepositoryInterface|null
-     */
-    public function repository(SessionRepositoryInterface $repository = null):? SessionRepositoryInterface
-    {
-        if ($repository)
-        {
-            $this->repository = $repository;
-        }
-        
-        return $this->repository;
-    }
-
     /**
      * @param ServerRequestInterface $request
      * @param UserInterface|null $user
@@ -110,29 +90,6 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
     {
-        if ($user instanceof SessionAwareInterface)
-        {
-            if ($this->repository == null)
-            {
-                throw new \RuntimeException(SessionRepositoryInterface::class . ' instance is null');
-            }
-            
-            if (($id = $this->getIdFromRequest($request)) != null && 
-                ($session = $user->sessions()->get($id)) != null)
-            {
-                $session->activity(($this->dateTimeFactory)());
-            }
-            
-            else
-            {
-                $user->sessions()->add($session = $this->repository->make($user, $request));
-                $user->sessions()->setCurrentId($session->getId());
-            }
-            
-            $this->repository->store($session);
-            
-        } 
-        
         return Result::authorized($request, $user, $remember);
     }
     
