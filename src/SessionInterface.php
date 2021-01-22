@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bermuda\Authentication;
-
 
 /**
  * Interface SessionInterface
@@ -32,6 +30,12 @@ interface SessionInterface
      * @return mixed
      */
     public function __set(string $name, $value);
+    
+    /**
+     * @param array|null $payload
+     * @return array|null
+     */
+    public function payload(?array $payload = null):? array ;
 
     /**
      * @param \DateTimeInterface|null $activity
