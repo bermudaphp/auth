@@ -6,7 +6,10 @@
     "psr-4":
     {
       "Bermuda\\Authentication\\": "src/"
-    }
+    },
+    "files": [
+            "src/functions.php"
+    ]
   },
   "require": 
   {
