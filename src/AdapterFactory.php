@@ -5,13 +5,14 @@ namespace Bermuda\Authentication;
 use function Bermuda\urlFor;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
-use Bermuda\Authentication\Adapter\PasswordAdapter;
-use Bermuda\Authentication\Adapter\CookieAdapter;
 
 final class AdapterFactory
 {    
     public function __invoke(ContainerInterface $container): CookieAdapter
     {        
-        return new CookieAdapter($container->get(AdapterInterface::CONFIG_ID));
+        $config = $container->get('config')[AdapterInterface::CONFIG_ID]->toArray();
+        $config[Adapter\AbstractAdapter::CONFIG_USER_PROVIDER_KEY] = $container->get(UserProviderInterface::class);
+        
+        return new Adapter\CookieAdapter($config);
     }
 }
