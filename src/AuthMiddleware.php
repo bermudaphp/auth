@@ -11,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * Class AuthMiddleware
  * @package Bermuda\Authentication
  */
-final class AuthMiddleware implements MiddlewareInterface
+final class AuthMiddleware implements MiddlewareInterface, AuthServiceInterface
 {
     private AdapterInterface $adapter;
     private ?SessionRepositoryInterface $sessionRepository;
@@ -26,6 +26,14 @@ final class AuthMiddleware implements MiddlewareInterface
      * @inheritDoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        return $this->authenticate($request, $handler->handle($request));
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function authenticate(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $request = $this->adapter->authenticate($request);
         $result  = $this->getResultFromRequest($request);
@@ -51,9 +59,11 @@ final class AuthMiddleware implements MiddlewareInterface
             }
             
             $this->sessionRepository->store($session);
+            
+            $response = $this->adapter->write($request, $response)
         }
         
-        return $this->adapter->write($request, $handler->handle($request));
+        return $response;
     }
     
     private function getResultFromRequest(ServerRequestInterface $req): Result
