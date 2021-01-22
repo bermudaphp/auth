@@ -14,6 +14,7 @@ interface AdapterInterface
     public const userAt = 'Auth:userAt';
     public const resultAt = 'Auth:resultAt';
     public const rememberAt = 'Auth:rememberAt';
+    public const CONFIG_ID = 'AdapterInterface:configID';
 
     /**
      * @param ServerRequestInterface $request
