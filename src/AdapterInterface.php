@@ -11,9 +11,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 interface AdapterInterface
 {
-    public const userAt = 'Auth:userAt';
-    public const resultAt = 'Auth:resultAt';
-    public const rememberAt = 'Auth:rememberAt';
+    public const userAt = 'AdapterInterface:userAt';
+    public const resultAt = 'AdapterInterface:resultAt';
+    public const rememberAt = 'AdapterInterface:rememberAt';
     public const CONFIG_ID = 'AdapterInterface:configID';
 
     /**
