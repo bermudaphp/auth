@@ -1,28 +1,15 @@
 <?php
 
-
 namespace Bermuda\Authentication;
 
-
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Bermuda\Authentication\Adapter\CookieAdapter;
-use Bermuda\Authentication\Adapter\PasswordAdapter;
-
-
-use function Bermuda\redirect_on_route;
-
-
-final class ConfigProvider
+/**
+ * Class ConfigProvider
+ * @package Bermuda\MiddlewareFactory
+ */
+class ConfigProvider extends \Bermuda\Config\ConfigProvider
 {
-    public function __invoke()
+    protected function getFactories(): array
     {
-        return [
-            'dependencies' => [
-                'factories' => [
-                    AdapterInterface::class => AdapterFactory::class
-                ]
-            ]
-        ];
+        return [AdapterInterface::class => AdapterFactory::class];
     }
 }
