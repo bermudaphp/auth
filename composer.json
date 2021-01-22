@@ -11,6 +11,7 @@
   "require": 
   {
     "php": ">= 7.4",
+    "bermudaphp/config": "^1.0",
     "dflydev/fig-cookies": "^2.0.1",
     "psr/http-server-middleware": "^1.0.1",
     "fig/http-message-util": "^v1.1.4"
