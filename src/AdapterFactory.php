@@ -9,11 +9,9 @@ use Bermuda\Authentication\Adapter\PasswordAdapter;
 use Bermuda\Authentication\Adapter\CookieAdapter;
 
 final class AdapterFactory
-{
-    public const configID = 'AdapterFactory:configID';
-    
+{    
     public function __invoke(ContainerInterface $container): CookieAdapter
     {        
-        return new CookieAdapter($container->get(self::configID));
+        return new CookieAdapter($container->get(AdapterInterface::CONFIG_ID));
     }
 }
