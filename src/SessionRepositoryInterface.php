@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bermuda\Authentication;
-
 
 /**
  * Interface SessionRepositoryInterface
@@ -29,14 +27,14 @@ interface SessionRepositoryInterface
     public function store(SessionInterface $session): void ;
 
     /**
-     * @param SessionInterface $session
+     * @param SessionInterface|Sessions $ses
      */
-    public function remove(SessionInterface $session): void ;
+    public function remove($ses): void ;
     
     /**
-     * @param array $ids
+     * @param string $userId
      */
-    public function removeByIds(array $ids): void ;
+    public function removeAll(string $userId): void ;
     
     /**
      * Remove all expired sessions
