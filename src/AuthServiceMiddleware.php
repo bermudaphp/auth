@@ -11,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * Class AuthMiddleware
  * @package Bermuda\Authentication
  */
-final class AuthMiddleware implements MiddlewareInterface, AuthServiceInterface
+final class AuthServiceMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
     private ?SessionRepositoryInterface $sessionRepository;
