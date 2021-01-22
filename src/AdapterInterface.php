@@ -11,9 +11,9 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 interface AdapterInterface
 {
-    public const userAt = UserInterface::class;
-    public const resultAt = Result::class;
-    public const rememberAt = self::class . '::rememberAt';
+    public const userAt = 'Auth:userAt';
+    public const resultAt = 'Auth:resultAt';
+    public const rememberAt = 'Auth:rememberAt';
 
     /**
      * @param ServerRequestInterface $request
