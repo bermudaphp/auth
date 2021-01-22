@@ -1,11 +1,8 @@
 <?php
 
-
 namespace Bermuda\Authentication;
 
-
 use Bermuda\String\Stringable;
-
 
 /**
  * Interface UserInterface
@@ -14,12 +11,12 @@ use Bermuda\String\Stringable;
 interface UserInterface
 {
     /**
-     * @return Stringable|int|string|null
+     * @return string|null
      */
-    public function getId();
+    public function getId()?: string ;
 
     /**
-     * @return string|Stringable
+     * @return string
      */
-    public function getCredential();
+    public function getCredential(): string ;
 }
