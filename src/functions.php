@@ -10,5 +10,14 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 function hasUser(ServerRequestInterface $req): bool
 {
-    return $req->getAttribute(AdapterInterface::userAt) instanceof UserInterface ;
+    return getUser($req) != null;
+}
+
+/**
+ * @param ServerRequestInterface $request
+ * @return bool
+ */
+function getUser(ServerRequestInterface $req):? UserInterface
+{
+    return $req->getAttribute(AdapterInterface::userAt, null);
 }
