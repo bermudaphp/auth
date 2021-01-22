@@ -17,20 +17,7 @@ interface SessionInterface
      * @return UserInterface
      */
     public function getUser(): UserInterface;
-
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    public function __get(string $name);
-
-    /**
-     * @param string $name
-     * @param $value
-     * @return mixed
-     */
-    public function __set(string $name, $value);
-    
+ 
     /**
      * @param array|null $payload
      * @return array|null
