@@ -27,13 +27,13 @@ final class AuthMiddleware implements MiddlewareInterface, AuthServiceInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->authenticate($request, $handler->handle($request));
+        return $this->adapter->write($request = $this->authenticate($request), $handler->handle($request));
     }
     
     /**
      * @inheritDoc
      */
-    public function authenticate(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function authenticate(ServerRequestInterface $request): ServerRequestInterface
     {
         $request = $this->adapter->authenticate($request);
         $result  = $this->getResultFromRequest($request);
@@ -59,11 +59,9 @@ final class AuthMiddleware implements MiddlewareInterface, AuthServiceInterface
             }
             
             $this->sessionRepository->store($session);
-            
-            $response = $this->adapter->write($request, $response)
         }
         
-        return $response;
+        return $request;
     }
     
     private function getResultFromRequest(ServerRequestInterface $req): Result
