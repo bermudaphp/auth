@@ -13,10 +13,11 @@ interface UserInterface
     /**
      * @return string|null
      */
-    public function getId()?: string ;
-
+    public function getId():? string ;
+    
     /**
-     * @return string
+     * @param string $credential
+     * @return bool
      */
-    public function getCredential(): string ;
+    public function checkCredential(string $credential): bool ;
 }
