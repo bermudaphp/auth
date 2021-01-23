@@ -30,12 +30,9 @@ final class AuthServiceMiddleware implements MiddlewareInterface
         return $this->adapter->write($request = $this->authenticate($request), $handler->handle($request));
     }
     
-    /**
-     * @inheritDoc
-     */
-    public function authenticate(ServerRequestInterface $request): ServerRequestInterface
+    public function authenticate(ServerRequestInterface $request, ?UserInterface $user, bool $remember = false): ServerRequestInterface
     {
-        $request = $this->adapter->authenticate($request);
+        $request = $this->adapter->authenticate($request, $user, $remember);
         $result  = $this->getResultFromRequest($request);
         
         if ($result->isAuthorized() && ($user = $result->getUser()) 
