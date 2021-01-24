@@ -34,7 +34,7 @@ final class AuthServiceMiddleware implements MiddlewareInterface
         $result = $this->getResultFromRequest($request = $this->authenticate($request));
         $response = $handler->handle($request);
 
-        if ($this->user != null)
+        if (self::isAuthenticated())
         {
             $request = $this->authenticate($request, self::$user, self::$remember);
         }
