@@ -14,6 +14,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class AuthServiceMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
+
+    private bool $remember = false;
+    private ?UserInterface $user = null;
+
     private ?SessionRepositoryInterface $sessionRepository;
 
     public function __construct(AdapterInterface $adapter, ?SessionRepository $repository = null)
@@ -27,10 +31,34 @@ final class AuthServiceMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->adapter->write($request = $this->authenticate($request), $handler->handle($request));
+        $result = $this->getResultFromRequest($request = $this->authenticate($request));
+        $response = $handler->handle($request);
+
+        if ($this->user != null)
+        {
+            $request = $this->authenticate($request, $this->user, $this->remember);
+        }
+
+        return $this->adapter->write($request, $response);
     }
-    
-    public function authenticate(ServerRequestInterface $request, ?UserInterface $user, bool $remember = false): ServerRequestInterface
+
+    /**
+     * @param UserInterface $user
+     * @param bool $remember
+     */
+    public function force(UserInterface $user, bool $remember = false): void
+    {
+        $this->user = $user;
+        $this->remember = $remember;
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param UserInterface|null $user
+     * @param bool $remember
+     * @return ServerRequestInterface
+     */
+    private function authenticate(ServerRequestInterface $request, ?UserInterface $user = null, bool $remember = false): ServerRequestInterface
     {
         $request = $this->adapter->authenticate($request, $user, $remember);
         $result  = $this->getResultFromRequest($request);
@@ -60,9 +88,13 @@ final class AuthServiceMiddleware implements MiddlewareInterface
         
         return $request;
     }
-    
+
+    /**
+     * @param ServerRequestInterface $req
+     * @return Result
+     */
     private function getResultFromRequest(ServerRequestInterface $req): Result
     {
-        return $request->getAttribute(AdapterInterface::resultAt);
+        return $req->getAttribute(AdapterInterface::resultAt);
     }
 }

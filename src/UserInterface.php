@@ -14,7 +14,7 @@ interface UserInterface
      * @return string|null
      */
     public function getId():? string ;
-    
+
     /**
      * @param string $credential
      * @return bool

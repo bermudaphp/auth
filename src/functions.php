@@ -17,7 +17,16 @@ function hasUser(ServerRequestInterface $req): bool
  * @param ServerRequestInterface $request
  * @return bool
  */
-function getUser(ServerRequestInterface $req):? UserInterface
+function getUserFromRequest(ServerRequestInterface $req):? UserInterface
 {
-    return $req->getAttribute(AdapterInterface::userAt, null);
+    $result = $req->getAttribute(AdapterInterface::resultAt);
+
+    if ($result instanceof Result && $result->getUser() != null)
+    {
+        return $result->getUser();
+    }
+
+    $user = $req->getAttribute(AdapterInterface::userAt);
+
+    return $user instanceof UserInterface ? $user : null;
 }
