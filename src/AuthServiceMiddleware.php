@@ -15,8 +15,8 @@ final class AuthServiceMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
 
-    private bool $remember = false;
-    private ?UserInterface $user = null;
+    private static bool $remember = false;
+    private static ?UserInterface $user = null;
 
     private ?SessionRepositoryInterface $sessionRepository;
 
@@ -36,7 +36,7 @@ final class AuthServiceMiddleware implements MiddlewareInterface
 
         if ($this->user != null)
         {
-            $request = $this->authenticate($request, $this->user, $this->remember);
+            $request = $this->authenticate($request, self::$user, self::$remember);
         }
 
         return $this->adapter->write($request, $response);
@@ -46,10 +46,19 @@ final class AuthServiceMiddleware implements MiddlewareInterface
      * @param UserInterface $user
      * @param bool $remember
      */
-    public function force(UserInterface $user, bool $remember = false): void
+    public static function auth(UserInterface $user, bool $remember = false): void
     {
-        $this->user = $user;
-        $this->remember = $remember;
+        self::$user = $user; self::$remember = $remember;
+    }
+    
+    public static function isAuthenticated(): bool
+    {
+        return self::$user != null;
+    }
+    
+    public static function user():? UserInterface
+    {
+        return self::$user;
     }
 
     /**
