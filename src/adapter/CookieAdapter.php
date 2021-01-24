@@ -11,6 +11,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Authentication\AdapterInterface;
 use Bermuda\Authentication\SessionAwareInterface;
 use Bermuda\Authentication\UserProviderInterface;
+use function Bermuda\Authentication\getUser;
+use function Bermuda\Authentication\getUserFromRequest;
 
 /**
  * Class CookieAdapter
@@ -18,6 +20,9 @@ use Bermuda\Authentication\UserProviderInterface;
  */
 final class CookieAdapter extends AbstractAdapter
 {
+    /**
+     * @var callable
+     */
     private $dateTimeFactory;
     private array $cookieParams;
     
@@ -27,8 +32,10 @@ final class CookieAdapter extends AbstractAdapter
     public function __construct(array $config)
     {
         $this->cookieParams = $config[self::CONFIG_COOKIE_KEY] ?? [];
-        $this->dateTimeFactory = static function() use ($dateTimeFactory): \DateTimeInterface
+        $this->dateTimeFactory = static function() use ($config): \DateTimeInterface
         {
+            $dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY_KEY] ?? null;
+
             if (!$dateTimeFactory)
             {
                 return new \DateTimeImmutable();
@@ -56,33 +63,24 @@ final class CookieAdapter extends AbstractAdapter
       
         return Result::unauthorized($request);
     }
-    
-    /**
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
-     */
-    public function unauthorized(ServerRequestInterface $request): ResponseInterface
-    {
-        return ($this->responseGenerator)($request);
-    }
 
     /**
      * @inheritDoc
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $user = $this->getUserFromRequest($request);
-        
+        $user = getUserFromRequest($request);
+
         if (!$this->cookieExists($request))
         {
             if ($user != null)
             {
                 if (!$this->viaRemember($request))
                 {
-                    return FigResponseCookies::set($response, $this->setCookie($this->getId($user)));
+                    return FigResponseCookies::set($response, $this->setCookie($this->getSID($user)));
                 }
 
-                return FigResponseCookies::set($response, $this->setCookie($this->getId($user))->rememberForever());
+                return FigResponseCookies::set($response, $this->setCookie($this->getSID($user))->rememberForever());
             }
 
             return $response;
@@ -146,14 +144,5 @@ final class CookieAdapter extends AbstractAdapter
     private function cookieExists(ServerRequestInterface $request): bool
     {
         return isset($request->getCookieParams()[$this->getCookieName()]);
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     * @return UserInterface|null
-     */
-    private function getUserFromRequest(ServerRequestInterface $request):? UserInterface
-    {
-        return ($user = $request->getAttribute(self::userAt)) instanceof UserInterface ? $user : null;
     }
 }

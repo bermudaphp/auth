@@ -128,7 +128,7 @@ abstract class AbstractAdapter implements AdapterInterface
      * @param UserInterface $user
      * @return string
      */
-    protected function getId(UserInterface $user): string
+    protected function getSID(UserInterface $user): string
     {
         if ($user instanceof SessionAwareInterface)
         {
