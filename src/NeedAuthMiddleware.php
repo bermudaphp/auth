@@ -30,11 +30,11 @@ final class NeedAuthMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($request->getAttribute(AdapterInterface::userAt) instanceof UserInterface)
+        if (Utils::hasUser($request))
         {
             return $handler->handle($request);
         }
 
-        return $this->adapter->unauthorized($request, $this->responseFactory->createReasponse(401));
+        return $this->adapter->unauthorized($request, $this->responseFactory->createResponse(401));
     }
 }
