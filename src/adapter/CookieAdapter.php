@@ -2,6 +2,7 @@
 
 namespace Bermuda\Authentication\Adapter;
 
+use Bermuda\Authentication\Utils;
 use Dflydev\FigCookies\SetCookie;
 use Bermuda\Authentication\Result;
 use Psr\Http\Message\ResponseInterface;
@@ -11,8 +12,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Authentication\AdapterInterface;
 use Bermuda\Authentication\SessionAwareInterface;
 use Bermuda\Authentication\UserProviderInterface;
-use function Bermuda\Authentication\getUser;
-use function Bermuda\Authentication\getUserFromRequest;
 
 /**
  * Class CookieAdapter
@@ -41,7 +40,7 @@ final class CookieAdapter extends AbstractAdapter
                 return new \DateTimeImmutable();
             }
                 
-            return $datetimeFactory();
+            return $dateTimeFactory();
         };
         
         parent::__construct($config);
@@ -69,7 +68,7 @@ final class CookieAdapter extends AbstractAdapter
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $user = getUserFromRequest($request);
+        $user = Utils::user($request);
 
         if (!$this->cookieExists($request))
         {
