@@ -56,6 +56,15 @@ final class AuthServiceMiddleware implements MiddlewareInterface
         return self::$user != null;
     }
     
+    /**
+     * @param UserInterface $user
+     * @param bool $remember
+     */
+    public static function logout(): void
+    {
+        self::$user = null; self::$remember = null;
+    }
+    
     public static function user():? UserInterface
     {
         return self::$user;
