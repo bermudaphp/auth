@@ -11,10 +11,10 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 interface AdapterInterface
 {
-    public const userAt = 'AdapterInterface:userAt';
-    public const resultAt = 'AdapterInterface:resultAt';
-    public const rememberAt = 'AdapterInterface:rememberAt';
-    public const CONFIG_ID = 'AdapterInterface:configID';
+    public const userAt = 'Bermuda\Authentication\AdapterInterface:userAt';
+    public const resultAt = 'Bermuda\Authentication\AdapterInterface:resultAt';
+    public const rememberAt = 'Bermuda\Authentication\AdapterInterface:rememberAt';
+    public const CONFIG_ID = 'Bermuda\Authentication\AdapterInterface:configID';
 
     /**
      * @param ServerRequestInterface $request
