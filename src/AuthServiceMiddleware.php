@@ -18,12 +18,12 @@ final class AuthServiceMiddleware implements MiddlewareInterface
     private static bool $remember = false;
     private static ?UserInterface $user = null;
 
-    private ?SessionRepositoryInterface $sessionRepository;
+    private ?SessionRepositoryInterface $repository;
 
-    public function __construct(AdapterInterface $adapter, ?SessionRepository $repository = null)
+    public function __construct(AdapterInterface $adapter, ?SessionRepositoryInterface $repository = null)
     {
         $this->adapter = $adapter;
-        $this->sessionRepository = $repository;
+        $this->repository = $repository;
     }
 
     /**
@@ -40,6 +40,16 @@ final class AuthServiceMiddleware implements MiddlewareInterface
         }
 
         return $this->adapter->write($request, $response);
+    }
+    
+    public function repository(?SessionRepositoryInterface $repository = null):? SessionRepositoryInterface
+    {
+        if ($repository != null)
+        {
+            $this->repository = $repository;
+        }
+        
+        return $this->repository;
     }
 
     /**
@@ -84,24 +94,16 @@ final class AuthServiceMiddleware implements MiddlewareInterface
         if ($result->isAuthorized() && ($user = $result->getUser()) 
             instanceof SessionAwareInterface)
         {
-            if ($this->sessionRepository == null)
+            if ($this->repository == null)
             {
-                throw new \RuntimeException('Bermuda\Authentication\AuthenticationMiddleware::$sessionRepository is null');
+                throw new \RuntimeException('Bermuda\Authentication\SessionRepositoryInterface instance not set. Call '. __CLASS__ . '::repository()');
             }
             
-            if (($id = $this->getIdFromRequest($request)) != null && 
-                ($session = $user->sessions()->get($id)) != null)
+            if (($session = $user->sessions()->current()) != null)
             {
-                $session->activity(($this->dateTimeFactory)());
+                $session->activity($this->getCurrentTime());
+                $this->repository->store($session);
             }
-            
-            else
-            {
-                $user->sessions()->add($session = $this->sessionRepository->make($user, $request));
-                $user->sessions()->setCurrentId($session->getId());
-            }
-            
-            $this->sessionRepository->store($session);
         }
         
         return $request;
@@ -114,5 +116,10 @@ final class AuthServiceMiddleware implements MiddlewareInterface
     private function getResultFromRequest(ServerRequestInterface $req): Result
     {
         return $req->getAttribute(AdapterInterface::resultAt);
+    }
+    
+    private function getCurrentTime(): \DateTimeInterface
+    {
+        return new \DateTimeImmutable();
     }
 }
