@@ -36,10 +36,15 @@ final class Sessions implements \IteratorAggregate
 
     /**
      * @param SessionInterface $session
+     * @param bool $markCurrent
+     * @return self
      */
-    public function add(SessionInterface $session)
+    public function add(SessionInterface $session, bool $markCurrent = true): self
     {
         $this->sessions[$session->getId()] = $session;
+        !$markCurrent ?: $this->setCurrentId($session->getId());
+        
+        return $this;
     }
 
     /**
