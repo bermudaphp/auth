@@ -52,11 +52,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function setResponseGenerator(callable $responseGenerator): self
     {
-        $this->responseGenerator = static function (ServerRequestInterface $req) use ($responseGenerator): ResponseInterface
-        {
-            return $responseGenerator($req);
-        };
-        
+        $this->responseGenerator = static fn(ServerRequestInterface $req): ResponseInterface => $responseGenerator($req);
         return $this;
     }
     
