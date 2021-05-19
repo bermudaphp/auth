@@ -21,9 +21,8 @@ final class Result
      */
     public function __construct(int $code = self::FAILURE, $msgs = [], ?UserInterface $user = null)
     {
-        $this->code = $code;
-        $this->msgs = (array) $msgs;
-        $this->user = $user;
+        $this->code = $code; $this->user = $user;
+        $this->msgs = is_array($msgs) ? $msgs : [$msgs];
     }
 
     /**
