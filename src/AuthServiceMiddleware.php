@@ -31,8 +31,7 @@ final class AuthServiceMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $result = $this->getResultFromRequest($request = $this->authenticate($request));
-        $response = $handler->handle($request);
+        $response = $handler->handle($request = $this->authenticate($request));
 
         if (self::isAuthenticated())
         {
