@@ -6,20 +6,20 @@ namespace Bermuda\Authentication;
  * Interface SessionRepositoryInterface
  * @package Bermuda\Authentication
  */
-interface SessionRepositoryInterface
+interface SessionStorageInterface
 {
     /**
-     * @param string|int $id
+     * @param string $sid
      * @return SessionInterface|null
      */
-    public function get($id):? SessionInterface ;
+    public function get(string $sid):? SessionInterface ;
     
     /**
      * @param UserInterface $user
      * @param ServerRequestInterface $request
      * @return SessionInterface
      */
-    public function make(UserInterface $user, ServerRequestInterface $request): SessionInterface ;
+    public function make(UserInterface $user, array $payload): SessionInterface ;
 
     /**
      * @param SessionInterface $session
@@ -29,12 +29,12 @@ interface SessionRepositoryInterface
     /**
      * @param SessionInterface|Sessions $ses
      */
-    public function remove($ses): void ;
+    public function remove(array $sid): void ;
     
     /**
      * @param string $userId
      */
-    public function removeAll(string $userId): void ;
+    public function removeAllUserSessions(string $userId): void ;
     
     /**
      * Remove all expired sessions
