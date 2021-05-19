@@ -11,18 +11,12 @@ final class Result
     const FAILURE = 0;
 
     private int $code;
-    private array $msgs = [];
+    private ?array $messages = null;
     private ?UserInterface $user = null;
 
-    /**
-     * @param int $code
-     * @param string|array $msgs
-     * @param UserInterface|null $user
-     */
-    public function __construct(int $code = self::FAILURE, $msgs = [], ?UserInterface $user = null)
+    private function __construct(int $code = self::FAILURE, ?UserInterface $user = null, array $messages = null)
     {
-        $this->code = $code; $this->user = $user;
-        $this->msgs = is_array($msgs) ? $msgs : [$msgs];
+        $this->messages = $messages; $this->code = $code; $this->user = $user;
     }
 
     /**
@@ -30,19 +24,19 @@ final class Result
      * @param UserInterface $user
      * @return ServerRequestInterface
      */
-    public static function authorized(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
+    public static function authorized(UserInterface $user): self
     {
-        return $request->withAttribute(AdapterInterface::resultAt, new self(self::AUTHORIZED, [], $user))
-            ->withAttribute(AdapterInterface::userAt, $user)
-            ->withAttribute(AdapterInterface::rememberAt, $remember);
+        return new self(self::AUTHORIZED, $user);
     }
 
-    /**
-     * @return ServerRequestInterface
-     */
-    public static function unauthorized(ServerRequestInterface $request): ServerRequestInterface
+    public static function unauthorized(): self
     {
-        return $request->withAttribute(AdapterInterface::resultAt, new self(self::UNAUTHORIZED));
+        return new self(self::UNAUTHORIZED);
+    }
+    
+    public static function failure($messages): self
+    {
+        return new self(self::FAILURE, null, is_array($messages) ? $messages : [$messages]);
     }
 
     /**
@@ -66,7 +60,7 @@ final class Result
      */
     public function isFailure(): bool
     {
-        return self::FAILURE >= $this->code;
+        return self::FAILURE == $this->code;
     }
 
     /**
@@ -80,8 +74,8 @@ final class Result
     /**
      * @return array
      */
-    public function getMsgs(): array
+    public function getMessages(): array
     {
-        return $this->msgs;
+        return $this->messages;
     }
 }
