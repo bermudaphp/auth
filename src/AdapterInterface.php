@@ -11,7 +11,6 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 interface AdapterInterface
 {
-    public const userAt = 'Bermuda\Authentication\AdapterInterface:userAt';
     public const CONFIG_ID = 'Bermuda\Authentication\AdapterInterface:configID';
 
     /**
