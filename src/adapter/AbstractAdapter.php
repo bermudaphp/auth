@@ -71,7 +71,7 @@ abstract class AbstractAdapter implements AdapterInterface
     public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): Result
     {
         $result = $user != null ? $this->forceAuthentication($request, $user, $remember) : $this->authenticateRequest($request);
-        return $this->next !== null && (!$result->isAuthorized() || !$result->isFailure()) ? $this->next->authenticate($request, $user, $remember);
+        return $this->next !== null && (!$result->isAuthorized() || !$result->isFailure()) ? $this->next->authenticate($request, $user, $remember) : $result;
     }
     
     protected function authenticateRequest(ServerRequestInterface $request): Result
