@@ -89,15 +89,6 @@ final class CookieAdapter extends AbstractAdapter
     }
 
     /**
-     * @param ServerRequestInterface $req
-     * @return bool
-     */
-    private function viaRemember(ServerRequestInterface $req): bool
-    {
-        return $req->getAttribute(self::rememberAt, false);
-    }
-
-    /**
      * @param string $value
      * @return SetCookie
      */
