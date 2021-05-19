@@ -22,7 +22,7 @@ interface AdapterInterface
      * @param bool $remember
      * @return ServerRequestInterface
      */
-    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface;
+    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): Result;
 
     /**
      * @param ServerRequestInterface $request
