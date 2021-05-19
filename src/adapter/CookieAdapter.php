@@ -68,11 +68,11 @@ final class CookieAdapter extends AbstractAdapter
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $user = Utils::user($request);
+        $user = $request->getAttribute(self::user_at);
 
         if (!$this->cookieExists($request))
         {
-            if ($user != null)
+            if ($user instanceof UserInterface)
             {
                 if (!$this->viaRemember($request))
                 {
