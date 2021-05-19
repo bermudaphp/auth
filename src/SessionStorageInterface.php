@@ -27,7 +27,8 @@ interface SessionStorageInterface
     public function store(SessionInterface $session): void ;
 
     /**
-     * @param SessionInterface|Sessions $ses
+     * 
+     * @param string[] $sid array of sessions id
      */
     public function remove(array $sid): void ;
     
