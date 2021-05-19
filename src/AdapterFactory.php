@@ -10,7 +10,7 @@ final class AdapterFactory
 {    
     public function __invoke(ContainerInterface $container): Adapter\CookieAdapter
     {        
-        $config = $container->get('config')[AdapterInterface::CONFIG_ID];
+        $config = $container->get('config')[AdapterInterface::container_config_id];
         $config[Adapter\AbstractAdapter::CONFIG_USER_PROVIDER_KEY] = $container->get(UserProviderInterface::class);
 
         if (!isset($config[Adapter\AbstractAdapter::CONFIG_RESPONSE_GENERATOR_KEY]))
