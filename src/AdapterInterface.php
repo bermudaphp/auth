@@ -17,10 +17,10 @@ interface AdapterInterface
     /**
      * @param ServerRequestInterface $request
      * @param UserInterface|null $user
-     * @param bool $remember
+     * @param bool|null $remember
      * @return Result
      */
-    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): Result;
+    public function authenticate(ServerRequestInterface $request, ?UserInterface $user = null, ?bool $remember = null): Result;
 
     /**
      * @param ServerRequestInterface $request
