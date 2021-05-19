@@ -38,18 +38,9 @@ abstract class AbstractAdapter implements AdapterInterface
         return $this->next = $adapter;
     }
     
-    /**
-     * @param UserProviderInterface|null $provider
-     * @return static
-     */
     public function provider(?UserProviderInterface $provider = null): UserProviderInterface
     {
-        if ($provider != null)
-        {
-            $this->provider = $provider;
-        }
-        
-        return $this->provider;
+        return $pdovider ? $this->provider = $provider : $this->provider;
     }
     
     /**
@@ -63,10 +54,7 @@ abstract class AbstractAdapter implements AdapterInterface
     }
     
     /**
-     * @param ServerRequestInterface $request
-     * @param UserInterface|null $user
-     * @param bool|null $remember
-     * @return ServerRequestInterface
+     * @inheritDoc
      */
     public final function authenticate(ServerRequestInterface $request, ?UserInterface $user = null, ?bool $remember = null): Result
     {
