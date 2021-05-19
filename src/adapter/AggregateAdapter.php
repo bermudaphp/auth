@@ -71,17 +71,13 @@ final class AggregateAdapter implements AdapterInterface
     }
      
     /**
-     * @param ServerRequestInterface $request
-     * @param UserInterface|null $user
-     * @param bool $remember
-     * @return ServerRequestInterface
+     * @inheritDoc
      */
-    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
+    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): Result
     {
         foreach ($this->adapters as $adapter)
         {
-            $result = ($request = $adapter->authenticate($request, $user, $remember))
-                ->getAttribute(self::resultAt);
+            $result = $adapter->authenticate($request, $user, $remember);
             
             if ($result->isAuthorized() || $result->isFailure())
             {
@@ -89,68 +85,43 @@ final class AggregateAdapter implements AdapterInterface
             }
         }
         
-        return Result::unauthorized($request);
+        return Result::unauthorized();
     }
     
-    /**
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     /**
+     * @inheritDoc
      */
     public function unauthorized(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $original = $response;
-        
         foreach($this->adapters as $adapter)
         {
             $response = $adapter->unauthorized($request, $response);
-            
-            if ($original !== $response)
-            {
-                return $response;
-            }
         }
         
-        return $response->withStatus(401, 'Unauthorized');
+        return $response;
     }
     
     /**
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @inheritDoc
      */
     public function clear(ResponseInterface $response): ResponseInterface 
     {
-        $original = $response;
-        
         foreach($this->adapters as $adapter)
         {
             $response = $adapter->clear($response);
-            
-            if ($original !== $response)
-            {
-                return $response;
-            }
         }
         
         return $response;
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @inheritDoc
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $original = $response;
-       
         foreach($this->adapters as $adapter)
         {
             $response = $adapter->write($request, $response);
-            
-            if ($original !== $response)
-            {
-                return $response;
-            }
         }
         
         return $response;
