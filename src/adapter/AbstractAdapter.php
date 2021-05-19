@@ -150,6 +150,11 @@ abstract class AbstractAdapter implements AdapterInterface
         return ($this->responseGenerator)($request, $response);
     }
     
+    protected function viaRemember(ServerRequestInterface $request): bool
+    {
+        return false;
+    }
+    
     /**
      * @param int $code
      * @return string
