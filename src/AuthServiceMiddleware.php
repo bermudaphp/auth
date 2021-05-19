@@ -33,7 +33,7 @@ final class AuthServiceMiddleware implements MiddlewareInterface
     {
         if (($result = $this->authenticate($request))->isAuthorized())
         {
-            $request = $request->withAttribute(self::user_at, $user = $result->getUser());
+            $request = $request->withAttribute($this->adapter::user_at, $user = $result->getUser());
             
             if ($user instanceof SessionAwareInterface)
             {
