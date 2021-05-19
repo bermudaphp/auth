@@ -50,7 +50,7 @@ final class CookieAdapter extends AbstractAdapter
      * @param ServerRequestInterface $request
      * @return ServerRequestInterface
      */
-    protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface
+    protected function authenticateRequest(ServerRequestInterface $request): Result
     {
         if (null != ($id = $this->getIdFromRequest($request)))
         {
@@ -60,7 +60,7 @@ final class CookieAdapter extends AbstractAdapter
             }
         }
       
-        return Result::unauthorized($request);
+        return Result::unauthorized();
     }
 
     /**
