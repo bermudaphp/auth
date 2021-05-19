@@ -22,7 +22,7 @@ abstract class AbstractAdapter implements AdapterInterface
     protected array $messages = [];
     protected \Closure $responseGenerator;
     protected UserProviderInterface $provider;
-    protected AdapterInterface $next;
+    protected ?AdapterInterface $next = null;
     
     public const CONFIG_USER_PROVIDER_KEY = 'AbstractAdapter:userProvider';
     public const CONFIG_RESPONSE_GENERATOR_KEY = 'AbstractAdapter:responseGenerator';
@@ -70,12 +70,8 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): Result
     {
-        if ($user != null)
-        {
-            return $this->forceAuthentication($request, $user, $remember);
-        }
-
-        return $this->authenticateRequest($request);
+        $result = $user != null ? $this->forceAuthentication($request, $user, $remember) : $this->authenticateRequest($request);
+        return $this->next !== null && (!$result->isAuthorized() || !$result->isFailure()) ? $this->next->authenticate($request, $user, $remember);
     }
     
     protected function authenticateRequest(ServerRequestInterface $request): Result
