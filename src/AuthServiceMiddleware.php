@@ -16,8 +16,6 @@ final class AuthServiceMiddleware implements MiddlewareInterface
     private AdapterInterface $adapter;
     private ?SessionStorageInterface $storage;
     
-    public const user_at = 'Bermuda\Authentication\AuthServiceMiddleware@user_at';
-
     public function __construct(AdapterInterface $adapter, ?SessionStorageInterface $storage = null)
     {
         $this->adapter = $adapter; $this->storage = $storage;
