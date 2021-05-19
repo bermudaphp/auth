@@ -9,9 +9,10 @@ namespace Bermuda\Authentication;
 interface SessionInterface
 {
     /**
+     * @param string|null $id
      * @return string
      */
-    public function getId(): string;
+    public function id(?string $id = null): string;
     
     /**
      * @return UserInterface
