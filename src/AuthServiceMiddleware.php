@@ -14,10 +14,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 final class AuthServiceMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
-
-    private static bool $remember = false;
-    private static ?UserInterface $user = null;
-
     private ?SessionStorageInterface $storage;
     
     public const user_at = 'Bermuda\Authentication\AuthServiceMiddleware@user_at';
