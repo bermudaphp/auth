@@ -62,7 +62,7 @@ abstract class AbstractAdapter implements AdapterInterface
      * @param bool $remember
      * @return ServerRequestInterface
      */
-    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): ServerRequestInterface
+    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): Result
     {
         if ($user != null)
         {
@@ -72,24 +72,14 @@ abstract class AbstractAdapter implements AdapterInterface
         return $this->authenticateRequest($request);
     }
     
-    /**
-     * @param ServerRequestInterface $request
-     * @return ServerRequestInterface
-     */
-    protected function authenticateRequest(ServerRequestInterface $request): ServerRequestInterface 
+    protected function authenticateRequest(ServerRequestInterface $request): Result
     {
-        return Result::unauthorized($request);
+        return Result::unauthorized();
     }
-    
-    /**
-     * @param ServerRequestInterface $request
-     * @param UserInterface $user
-     * @param bool $remember
-     * @return ServerRequestInterface
-     */
-    protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
+
+    protected function forceAuthentication(ServerRequestInterface $request, UserInterface $user, bool $remember = false): Result
     {
-        return Result::authorized($request, $user, $remember);
+        return Result::authorized($user);
     }
     
     /**
@@ -128,7 +118,7 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         if ($user instanceof SessionAwareInterface)
         {
-            return $user->sessions()->current()->getId();
+            return $user->sessions()->current()->id();
         }
 
         return $user->getId();
