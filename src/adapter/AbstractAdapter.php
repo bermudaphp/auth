@@ -22,6 +22,7 @@ abstract class AbstractAdapter implements AdapterInterface
     protected array $messages = [];
     protected \Closure $responseGenerator;
     protected UserProviderInterface $provider;
+    protected AdapterInterface $next;
     
     public const CONFIG_USER_PROVIDER_KEY = 'AbstractAdapter:userProvider';
     public const CONFIG_RESPONSE_GENERATOR_KEY = 'AbstractAdapter:responseGenerator';
@@ -30,6 +31,11 @@ abstract class AbstractAdapter implements AdapterInterface
     {
         $this->provider = $config[self::CONFIG_USER_PROVIDER_KEY];
         $this->setResponseGenerator($config[self::CONFIG_RESPONSE_GENERATOR_KEY]);
+    }
+    
+    public function setNext(AdapterInterface $adapter): AdapterInterface
+    {
+        return $this->next = $adapter;
     }
     
     /**
