@@ -2,7 +2,7 @@
 
 namespace Bermuda\Authentication;
 
-use function Bermuda\urlFor;
+use function Bermuda\view;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -12,15 +12,9 @@ final class AdapterFactory
     {        
         $config = $container->get('config')[AdapterInterface::container_config_id];
         $config[Adapter\AbstractAdapter::CONFIG_USER_PROVIDER_KEY] = $container->get(UserProviderInterface::class);
-
-        if (!isset($config[Adapter\AbstractAdapter::CONFIG_RESPONSE_GENERATOR_KEY]))
-        {
-            $config[Adapter\AbstractAdapter::CONFIG_RESPONSE_GENERATOR_KEY] = static function()
-            {
-                return urlFor('signIn');
-            };
-        }
+        isset($config[Adapter\AbstractAdapter::CONFIG_RESPONSE_GENERATOR_KEY]) ?:
+            $config[Adapter\AbstractAdapter::CONFIG_RESPONSE_GENERATOR_KEY] = static fn(): ResponseInterface => view('app::login');
         
-        return new Adapter\CookieAdapter($config);
+        return new Adapter\PasswordAdapter($config);
     }
 }
