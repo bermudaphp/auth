@@ -115,17 +115,12 @@ abstract class AbstractAdapter implements AdapterInterface
     }
     
     /**
-     * @param array $messages
+     * @param array|null $messages
      * @return array
      */
-    public function messages(array $messages = []): array
+    public function messages(?array $messages = null): array
     {
-        if ($messages != [])
-        {
-            $this->messages = array_merge($this->messages, $messages);
-        }
-
-        return $this->messages;
+        return $messages != null ? $this->messages = array_merge($this->messages, $messages) : $this->messages ;
     }
 
     /**
