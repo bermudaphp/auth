@@ -78,7 +78,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function clear(ResponseInterface $response): ResponseInterface
     {
-        return $response;
+        return $this->next != null ? $this->next->clear($response) : $response;
     }
     
      /**
@@ -88,7 +88,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-         return $response;
+         return $this->next != null ? $this->next->write($request, $response) : $response;
     }
     
     /**
