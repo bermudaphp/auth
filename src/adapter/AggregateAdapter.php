@@ -2,6 +2,7 @@
 
 namespace Bermuda\Authentication\Adapter;
 
+use Bermuda\String\Str;
 use Bermuda\Authentication\Result;
 use Bermuda\Authentication\UserInterface;
 use Bermuda\Authentication\AdapterInterface;
@@ -13,117 +14,95 @@ use Psr\Http\Message\ServerRequestInterface;
  * Class AggregateAdapter
  * @package Bermuda\Authentication\Adapter
  */
-final class AggregateAdapter implements AdapterInterface
+final class PasswordAdapter extends AbstractAdapter
 {
-    /**
-     * @var AdapterInterface[]
-     */
-    private array $adapters = [];
-
-    /**
-     * @param AdapterInterface[] $adapters
-     */
-    public function __construct(iterable $adapters = [])
-    {
-        $this->addAdapters($adapters);
-    }
+    private string $identity;
+    private string $credential;
+    private string $path = 'login';
+    private string $remember = 'remember_me';
     
     /**
-     * @param AdapterInterface $adapter
-     * @return self
-     */
-    public function addAdapter(AdapterInterface $adapter): self
+     * @var callable
+     */ 
+    private $checkCridentialCallback;
+    
+    public function __construct(
+        UserProviderInterface $provider, 
+        callable $responseGenerator, 
+        string $identity = 'username', string $credential = 'password')
     {
-        $this->adapters[get_class($adapter)] = $adapter;
-        return $this;
+        parent::__construct($provider, $responseGenerator);
+        $this->identity = $identity, $this->credential = $credential;
+        $this->checkCridentialCallback = static fn(UserInterface $user, string $credential): bool => \password_verify($credential, $user->getCredential());
     }
     
-     /**
-     * @param AdapterInterface[] $adapters
-     * @return self
-     */
-    public function addAdapters(iterable $adapters): self
+    public function credential(?string $value = null): string
     {
-        foreach($adapters as $adapter)
+        return $value ? $this->credential = $value : $this->credential;
+    }
+    
+    public function remember(?string $value = null): string
+    {
+        return $value ? $this->remember_me = $value : $this->remember_me;
+    }
+    
+    public function identity(?string $value = null): string
+    {
+        return $value ? $this->identity = $value : $this->identity;
+    }
+    
+    public function path(string $value = null): string
+    {
+        return $value ? $this->path = $value : $this->path;
+    }
+    
+    public function checkCredentialCallback(?callable $value = null): callable
+    {
+        return $value ? $this->checkCridentialCallback = static fn(UserInterface $user, string $credential):bool 
+            => (bool) $value($user, $credential) : $this->checkCridentialCallback;
+    }
+    
+    protected function authenticateRequest(ServerRequestInterface $request): Result
+    {
+        if (Str::equals($request->getMethod(), 'POST') && 
+             Str::equals($request->getUri()->getPath(), $this->path))
         {
-            $this->addAdapter($adapter);
-        }
-        
-        return $this;
-    }
-    
-    /**
-     * @param string $classname
-     * @return AdapterInterface|null
-     */
-    public function getAdapter(string $classname):? AdapterInterface
-    {
-        return $this->adapters[$classname] ?? null;
-    }
-    
-    /**
-     * @param string $classname
-     * @return bool
-     */
-    public function hasAdapter(string $classname): bool
-    {
-        return isset($this->adapters[$classname]);
-    }
-     
-    /**
-     * @inheritDoc
-     */
-    public function authenticate(ServerRequestInterface $request, UserInterface $user = null, bool $remember = false): Result
-    {
-        foreach ($this->adapters as $adapter)
-        {
-            $result = $adapter->authenticate($request, $user, $remember);
-            
-            if ($result->isAuthorized() || $result->isFailure())
+            if (($id = $this->getIdFromRequest($request)) != null 
+                && ($user = $this->provider->provide($id)) != null)
             {
-                return $request;
+                
+                $credential = ((array) $request->getParsedBody())[$this->credential] ?? null;
+                
+                if ($credential == null)
+                {
+                    return Result::failure('Credential is missing');
+                }
+                
+                $result = ($this->checkCridentialCallback)($user, $credential);
+                
+                if ($result)
+                {
+                    return $this->forceAuthentication($user, $this->viaRemember($request));
+                }
+                
+                return Result::failure('Invalid credential');
             }
         }
-        
+         
         return Result::unauthorized();
     }
     
-     /**
-     * @inheritDoc
+    /**
+     * @param ServerRequestInterface $request
+     * @return UserInterface|null
      */
-    public function unauthorized(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    protected function getIdFromRequest(ServerRequestInterface $request):? string 
     {
-        foreach($this->adapters as $adapter)
-        {
-            $response = $adapter->unauthorized($request, $response);
-        }
-        
-        return $response;
+        return ((array) $request->getParsedBody())[$this->identity] ?? null;
     }
     
-    /**
-     * @inheritDoc
-     */
-    public function clear(ResponseInterface $response): ResponseInterface 
+    protected function viaRemember(ServerRequestInterface $request): bool
     {
-        foreach($this->adapters as $adapter)
-        {
-            $response = $adapter->clear($response);
-        }
-        
-        return $response;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        foreach($this->adapters as $adapter)
-        {
-            $response = $adapter->write($request, $response);
-        }
-        
-        return $response;
+        return Str::equalsAny((string) ((array) $request->getParsedBody())[$this->remember_me] ?? '', ['on', '1']);
     }
 }
