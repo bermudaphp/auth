@@ -8,13 +8,12 @@ use Psr\Http\Message\ResponseInterface;
 
 final class AdapterFactory
 {    
+    public const cookie_params_id = 'Bermuda\Authentication\AdapterFactory@cookie_params';
     public function __invoke(ContainerInterface $container): Adapter\CookieAdapter
-    {        
-        $config = $container->get('config')[AdapterInterface::container_config_id];
-        $config[Adapter\AbstractAdapter::CONFIG_USER_PROVIDER_KEY] = $container->get(UserProviderInterface::class);
-        isset($config[Adapter\AbstractAdapter::CONFIG_RESPONSE_GENERATOR_KEY]) ?:
-            $config[Adapter\AbstractAdapter::CONFIG_RESPONSE_GENERATOR_KEY] = static fn(): ResponseInterface => view('app::login');
+    {         
+        ($adapter = new Adapter\PasswordAdapter($provider = $container->get(UserProviderInterface::class), $generator = static fn(): ResponseInterface => view('app::login')))
+            ->setNext(new Adapter\CookieAdapter($provider, $generator, $container->get(self::cookie_params_id)));
         
-        return new Adapter\PasswordAdapter($config);
+        return $adapter;
     }
 }
