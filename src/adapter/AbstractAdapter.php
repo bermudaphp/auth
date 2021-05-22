@@ -98,6 +98,16 @@ abstract class AbstractAdapter implements AdapterInterface
     }
     
     /**
+     * @param UserInterface $user
+     * @return string
+     */
+    protected function getSID(UserInterface $user): string
+    {
+        return $user instanceof SessionAwareInterface 
+            ? $user->sessions()->current()->getId() : $user->getId();
+    }
+    
+    /**
      * @param array|null $messages
      * @return array
      */
