@@ -6,7 +6,7 @@ namespace Bermuda\Authentication;
  * Class ConfigProvider
  * @package Bermuda\MiddlewareFactory
  */
-class ConfigProvider extends \Bermuda\Config\ConfigProvider
+final class ConfigProvider extends \Bermuda\Config\ConfigProvider
 {
     protected function getFactories(): array
     {
