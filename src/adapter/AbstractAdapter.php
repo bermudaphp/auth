@@ -19,7 +19,14 @@ abstract class AbstractAdapter implements AdapterInterface
     /**
      * @var string[]
      */
-    protected array $messages = [];
+    protected array $messages = [
+        Result::FAILURE => 'Authorization failed!';
+        Result::CREDENTIAL_IS_MISSING => 'Credential is missing!',
+        Result::CREDENTIAL_IS_INVALID => 'Credential is invalid!',
+        Result::IDENTITY_IS_MISSING => 'Identity is missing!';
+        Result::IDENTITY_NOT_FOUND => 'Identity not found!';
+    ];
+    
     protected \Closure $responseGenerator;
     protected UserProviderInterface $provider;
     protected ?AdapterInterface $next = null;
