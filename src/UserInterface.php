@@ -16,8 +16,7 @@ interface UserInterface
     public function getId():? string ;
 
     /**
-     * @param string $credential
-     * @return bool
+     * @return string
      */
-    public function checkCredential(string $credential): bool ;
+    public function getCredential(): string ;
 }
