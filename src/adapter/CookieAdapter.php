@@ -25,25 +25,17 @@ final class CookieAdapter extends AbstractAdapter
     private $dateTimeFactory;
     private array $cookieParams;
     
-    const CONFIG_COOKIE_KEY = 'Bermuda\Authentication\CookieAdapter@cookie';
-    const CONFIG_DATETIME_FACTORY_KEY = 'Bermuda\Authentication\CookieAdapter@datetimeFactory';
-
-    public function __construct(array $config)
+    public function __construct(UserProviderInterface $provider, callable $responseGenerator, array $cookieParams = [])
     {
-        $this->cookieParams = $config[self::CONFIG_COOKIE_KEY] ?? [];
-        $this->dateTimeFactory = static function() use ($config): \DateTimeInterface
-        {
-            $dateTimeFactory = $config[self::CONFIG_DATETIME_FACTORY_KEY] ?? null;
-
-            if (!$dateTimeFactory)
-            {
-                return new \DateTimeImmutable();
-            }
-                
-            return $dateTimeFactory();
-        };
-        
-        parent::__construct($config);
+        $this->cookieParams = $cookieParams;
+        $this->dateTimeFactory = static fn(): \DateTimeInterface => new \DateTimeImmutable();
+        parent::__construct($provider, $responseGenerator);
+    }
+    
+    public function setDateTimeFactory(callable $factory): self
+    {
+        $this->dateTimeFactory = static fn(): \DateTimeInterface => $factory();
+        return $this;
     }
 
     /**
