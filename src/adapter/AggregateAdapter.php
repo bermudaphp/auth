@@ -67,26 +67,27 @@ final class PasswordAdapter extends AbstractAdapter
         if (Str::equals($request->getMethod(), 'POST') && 
              Str::equals($request->getUri()->getPath(), $this->path))
         {
-            if (($id = $this->getIdFromRequest($request)) != null 
-                && ($user = $this->provider->provide($id)) != null)
+            if (($id = $this->getIdFromRequest($request)) == null)
             {
-                
-                $credential = ((array) $request->getParsedBody())[$this->credential] ?? null;
-                
-                if ($credential == null)
+                return Result::failure($this->messages[Result::IDENTITY_IS_MISSING], Result::IDENTITY_IS_MISSING);
+            }
+            
+            if (($user = $this->provider->provide($id)) != null)
+            {
+                if (($credential = ((array) $request->getParsedBody())[$this->credential] ?? null) == null)
                 {
-                    return Result::failure('Credential is missing');
+                    return Result::failure($this->messages[Result::CREDENTIAL_IS_MISSING], Result::CREDENTIAL_IS_MISSING);
                 }
-                
-                $result = ($this->checkCridentialCallback)($user, $credential);
-                
-                if ($result)
+
+                if (($this->checkCridentialCallback)($user, $credential))
                 {
                     return $this->forceAuthentication($user, $this->viaRemember($request));
                 }
                 
-                return Result::failure('Invalid credential');
+                return Result::failure($this->messages[Result::CREDENTIAL_IS_INVALID], Result::CREDENTIAL_IS_INVALID);
             }
+            
+            return Result::failure($this->messages[Result::IDENTITY_NOT_FOUND], Result::IDENTITY_NOT_FOUND);
         }
          
         return Result::unauthorized();
