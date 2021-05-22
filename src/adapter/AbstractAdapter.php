@@ -23,8 +23,8 @@ abstract class AbstractAdapter implements AdapterInterface
         Result::FAILURE => 'Authorization failed!';
         Result::CREDENTIAL_IS_MISSING => 'Credential is missing!',
         Result::CREDENTIAL_IS_INVALID => 'Credential is invalid!',
-        Result::IDENTITY_IS_MISSING => 'Identity is missing!';
-        Result::IDENTITY_NOT_FOUND => 'Identity not found!';
+        Result::IDENTITY_IS_MISSING => 'Identity is missing!',
+        Result::IDENTITY_NOT_FOUND => 'Identity not found!'
     ];
     
     protected \Closure $responseGenerator;
