@@ -32,7 +32,7 @@ final class PasswordAdapter extends AbstractAdapter
         string $identity = 'username', string $credential = 'password')
     {
         parent::__construct($provider, $responseGenerator);
-        $this->identity = $identity, $this->credential = $credential;
+        $this->identity = $identity; $this->credential = $credential;
         $this->checkCridentialCallback = static fn(UserInterface $user, string $credential): bool => \password_verify($credential, $user->getCredential());
     }
     
