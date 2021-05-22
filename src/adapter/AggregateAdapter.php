@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Class AggregateAdapter
+ * Class PasswordAdapter
  * @package Bermuda\Authentication\Adapter
  */
 final class PasswordAdapter extends AbstractAdapter
