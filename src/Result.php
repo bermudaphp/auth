@@ -9,7 +9,11 @@ final class Result
     const AUTHORIZED = 1;
     const UNAUTHORIZED = 2;
     const FAILURE = 0;
-
+    const CREDENTIAL_IS_MISSING = -1;
+    const CREDENTIAL_IS_INVALID = -2;
+    const IDENTITY_IS_MISSING = -3;
+    const IDENTITY_NOT_FOUND = -4;
+    
     private int $code;
     private ?array $messages = null;
     private ?UserInterface $user = null;
