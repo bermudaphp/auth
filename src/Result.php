@@ -38,9 +38,9 @@ final class Result
         return new self(self::UNAUTHORIZED);
     }
     
-    public static function failure($messages): self
+    public static function failure($messages, int $code = self::FAILURE): self
     {
-        return new self(self::FAILURE, null, is_array($messages) ? $messages : [$messages]);
+        return new self($code, null, is_array($messages) ? $messages : [$messages]);
     }
 
     /**
@@ -64,7 +64,7 @@ final class Result
      */
     public function isFailure(): bool
     {
-        return self::FAILURE == $this->code;
+        return $this->code <= self::FAILURE;
     }
 
     /**
