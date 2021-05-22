@@ -25,8 +25,8 @@ final class CookieAdapter extends AbstractAdapter
     private $dateTimeFactory;
     private array $cookieParams;
     
-    const CONFIG_COOKIE_KEY = 'CookieAdapter:cookie';
-    const CONFIG_DATETIME_FACTORY_KEY = 'CookieAdapter:datetimeFactory';
+    const CONFIG_COOKIE_KEY = 'Bermuda\Authentication\CookieAdapter@cookie';
+    const CONFIG_DATETIME_FACTORY_KEY = 'Bermuda\Authentication\CookieAdapter@datetimeFactory';
 
     public function __construct(array $config)
     {
