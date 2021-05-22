@@ -24,13 +24,10 @@ abstract class AbstractAdapter implements AdapterInterface
     protected UserProviderInterface $provider;
     protected ?AdapterInterface $next = null;
     
-    public const CONFIG_USER_PROVIDER_KEY = 'Bermuda\Authentication\AbstractAdapter@user_provider';
-    public const CONFIG_RESPONSE_GENERATOR_KEY = 'Bermuda\Authentication\AbstractAdapter@response_generator';
-
-    public function __construct(array $config)
+    public function __construct(UserProviderInterface $provider, callable $responseGenerator)
     {
-        $this->provider = $config[self::CONFIG_USER_PROVIDER_KEY];
-        $this->setResponseGenerator($config[self::CONFIG_RESPONSE_GENERATOR_KEY]);
+        $this->provider = $provider;
+        $this->setResponseGenerator($responseGenerator);
     }
     
     public function setNext(AdapterInterface $adapter): AdapterInterface
