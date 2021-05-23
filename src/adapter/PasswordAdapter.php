@@ -7,6 +7,7 @@ use Bermuda\Authentication\Result;
 use Bermuda\Authentication\UserInterface;
 use Bermuda\Authentication\AdapterInterface;
 use Bermuda\Authentication\UserProviderInterface;
+use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,8 +19,8 @@ final class PasswordAdapter extends AbstractAdapter
 {
     private string $identity;
     private string $credential;
-    private string $path = 'login';
-    private string $remember = 'remember_me';
+    private string $path = '/login';
+    private string $remember_me = 'remember_me';
     
     /**
      * @var callable
@@ -40,7 +41,7 @@ final class PasswordAdapter extends AbstractAdapter
     {
         return $value ? $this->credential = $value : $this->credential;
     }
-    
+
     public function remember(?string $value = null): string
     {
         return $value ? $this->remember_me = $value : $this->remember_me;
@@ -64,7 +65,7 @@ final class PasswordAdapter extends AbstractAdapter
     
     protected function authenticateRequest(ServerRequestInterface $request): Result
     {
-        if (Str::equals($request->getMethod(), 'POST') && 
+        if (Str::equals($request->getMethod(), RequestMethodInterface::METHOD_POST) &&
              Str::equals($request->getUri()->getPath(), $this->path))
         {
             if (($id = $this->getIdFromRequest($request)) == null)
@@ -104,6 +105,6 @@ final class PasswordAdapter extends AbstractAdapter
     
     protected function viaRemember(ServerRequestInterface $request): bool
     {
-        return Str::equalsAny((string) ((array) $request->getParsedBody())[$this->remember_me] ?? '', ['on', '1']);
+        return self::$viaRemember || Str::equalsAny(((array) $request->getParsedBody())[$this->remember_me] ?? '', ['on', '1']);
     }
 }
