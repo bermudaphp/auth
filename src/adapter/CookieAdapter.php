@@ -5,6 +5,7 @@ namespace Bermuda\Authentication\Adapter;
 use Bermuda\Authentication\Utils;
 use Dflydev\FigCookies\SetCookie;
 use Bermuda\Authentication\Result;
+use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\ResponseInterface;
 use Bermuda\Authentication\UserInterface;
 use Dflydev\FigCookies\FigResponseCookies;
@@ -60,11 +61,9 @@ final class CookieAdapter extends AbstractAdapter
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $user = $request->getAttribute(self::user_at);
-
         if (!$this->cookieExists($request))
         {
-            if ($user instanceof UserInterface)
+            if (self::$user instanceof UserInterface)
             {
                 if (!$this->viaRemember($request))
                 {
@@ -77,7 +76,7 @@ final class CookieAdapter extends AbstractAdapter
             return $response;
         }
 
-        return $user == null ? $this->clear($response) : $response;
+        return self::$user == null ? $this->clear($response) : $response;
     }
 
     /**
@@ -88,7 +87,7 @@ final class CookieAdapter extends AbstractAdapter
     {
         return SetCookie::create($this->getCookieName(), $value)
             ->withHttpOnly($this->cookieParams['httpOnly'] ?? true)
-            ->withSecure($this->cookieParams['secure'] ?? true)
+            ->withSecure($this->cookieParams['secure'] ?? false)
             ->withPath($this->cookieParams['path'] ?? '/')
             ->withExpires($this->cookieParams['lifetime'] ?? null);
     }
