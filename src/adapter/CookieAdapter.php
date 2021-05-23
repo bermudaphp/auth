@@ -87,7 +87,7 @@ final class CookieAdapter extends AbstractAdapter
     {
         return SetCookie::create($this->getCookieName(), $value)
             ->withHttpOnly($this->cookieParams['httpOnly'] ?? true)
-            ->withSecure($this->cookieParams['secure'] ?? false)
+            ->withSecure($this->cookieParams['secure'] ?? true)
             ->withPath($this->cookieParams['path'] ?? '/')
             ->withExpires($this->cookieParams['lifetime'] ?? null);
     }
