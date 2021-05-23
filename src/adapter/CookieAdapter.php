@@ -110,7 +110,7 @@ final class CookieAdapter extends AbstractAdapter
         return $request->getCookieParams()[$this->getCookieName()] ?? null;
     }
     
-     /**
+    /**
      * @return string
      */
     private function getCookieName(): string
