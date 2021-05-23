@@ -30,6 +30,9 @@ abstract class AbstractAdapter implements AdapterInterface
     protected \Closure $responseGenerator;
     protected UserProviderInterface $provider;
     protected ?AdapterInterface $next = null;
+
+    protected static ?UserInterface $user = null;
+    protected static bool $viaRemember = false;
     
     public function __construct(UserProviderInterface $provider, callable $responseGenerator)
     {
@@ -62,7 +65,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public final function authenticate(ServerRequestInterface $request, ?UserInterface $user = null, ?bool $remember = null): Result
     {
-        $result = $user != null ? $this->forceAuthentication($user, $remember = $remember ?? $this->viaRemember($request)) : $this->authenticateRequest($request);
+        $result = $user != null ? $this->forceAuthentication(static::$user = $user, static::$viaRemember = $remember ?? $this->viaRemember($request)) : $this->authenticateRequest($request);
         return $this->next !== null && !($result->isAuthorized() || $result->isFailure()) ? $this->next->authenticate($request, $user, $remember) : $result;
     }
     
@@ -92,7 +95,7 @@ abstract class AbstractAdapter implements AdapterInterface
      */
     public function write(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-         return $this->next != null ? $this->next->write($request, $response) : $response;
+        return $this->next != null ? $this->next->write($request, $response) : $response;
     }
     
     /**
@@ -135,7 +138,7 @@ abstract class AbstractAdapter implements AdapterInterface
     
     protected function viaRemember(ServerRequestInterface $request): bool
     {
-        return false;
+        return self::$viaRemember;
     }
     
     /**
