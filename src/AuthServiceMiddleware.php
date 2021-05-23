@@ -15,6 +15,8 @@ final class AuthServiceMiddleware implements MiddlewareInterface
 {
     private AdapterInterface $adapter;
     private ?SessionStorageInterface $storage;
+
+    public static ?UserInterface $user = null;
     
     public function __construct(AdapterInterface $adapter, ?SessionStorageInterface $storage = null)
     {
@@ -31,18 +33,29 @@ final class AuthServiceMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (($result = $this->authenticate($request))->isAuthorized())
+        return $this->adapter->write($this->authenticate($request), $response = $handler->handle($request));
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param UserInterface $user
+     * @param bool $remember
+     * @return ServerRequestInterface
+     */
+    public function authenticate(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
+    {
+        if (($result = $this->adapter->authenticate($request, $user, $remember))->isAuthorized())
         {
-            $request = $request->withAttribute($this->adapter::user_at, $user = $result->getUser());
-            
-            if ($user instanceof SessionAwareInterface)
+            $request = $request->withAttribute($this->adapter::user_at, self::$user = $result->getUser());
+
+            if (self::$user instanceof SessionAwareInterface)
             {
                 if ($this->storage == null)
                 {
                     throw new \RuntimeException('Bermuda\Authentication\SessionStorageInterface instance not set. Call '. __CLASS__ . '::storage()');
                 }
-            
-                if (($session = $user->sessions()->current()) != null)
+
+                if (($session = self::$user->sessions()->current()) != null)
                 {
                     $session->activity(new \DateTimeImmutable());
                     $this->storage->store($session);
@@ -50,6 +63,16 @@ final class AuthServiceMiddleware implements MiddlewareInterface
             }
         }
 
-        return $this->adapter->write($response = $handler->handle($request), $response);
+        return $request;
+    }
+
+    public static function isAuthorized(): bool
+    {
+        return self::$user != null;
+    }
+
+    public static function getUser():? UserInterface
+    {
+        return self::$user;
     }
 }
