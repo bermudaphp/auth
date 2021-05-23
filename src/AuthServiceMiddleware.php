@@ -42,7 +42,7 @@ final class AuthServiceMiddleware implements MiddlewareInterface
      * @param bool $remember
      * @return ServerRequestInterface
      */
-    public function authenticate(ServerRequestInterface $request, UserInterface $user, bool $remember = false): ServerRequestInterface
+    public function authenticate(ServerRequestInterface $request, ?UserInterface $user = null, bool $remember = false): ServerRequestInterface
     {
         if (($result = $this->adapter->authenticate($request, $user, $remember))->isAuthorized())
         {
