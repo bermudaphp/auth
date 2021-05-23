@@ -49,7 +49,7 @@ final class CookieAdapter extends AbstractAdapter
         {
             if (($user = $this->provider->provide($id)) != null)
             {
-                return $this->forceAuthentication($request, $user, $this->viaRemember($request));
+                return $this->forceAuthentication($user, $this->viaRemember($request));
             }
         }
       
@@ -67,10 +67,10 @@ final class CookieAdapter extends AbstractAdapter
             {
                 if (!$this->viaRemember($request))
                 {
-                    return FigResponseCookies::set($response, $this->setCookie($this->getSID($user)));
+                    return FigResponseCookies::set($response, $this->setCookie($this->getSID(self::$user)));
                 }
 
-                return FigResponseCookies::set($response, $this->setCookie($this->getSID($user))->rememberForever());
+                return FigResponseCookies::set($response, $this->setCookie($this->getSID(self::$user))->rememberForever());
             }
 
             return $response;
@@ -110,7 +110,7 @@ final class CookieAdapter extends AbstractAdapter
         return $request->getCookieParams()[$this->getCookieName()] ?? null;
     }
     
-    /**
+     /**
      * @return string
      */
     private function getCookieName(): string
