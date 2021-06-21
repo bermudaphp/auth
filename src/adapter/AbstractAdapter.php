@@ -40,7 +40,7 @@ abstract class AbstractAdapter implements AdapterInterface
         $this->setResponseGenerator($responseGenerator);
     }
     
-    public function setNext(AdapterInterface $adapter): AdapterInterface
+    final public function setNext(AdapterInterface $adapter): AdapterInterface
     {
         return $this->next = $adapter;
     }
